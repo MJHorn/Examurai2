@@ -39,9 +39,17 @@
                 </button>
                 <button class="nav-item" data-tab="search">
                     <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="feather">
-                        <circle cx="11" cy="11" r="8M21 21l-4.35-4.35"/>
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                     <span>Tag Library Search</span>
+                </button>
+                <button class="nav-item" data-tab="classes">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="feather">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+                    </svg>
+                    <span>Class Tracker</span>
                 </button>
             </nav>
             
@@ -107,6 +115,10 @@
                             <select id="tagging-exam-select" class="custom-select">
                                 <!-- Populated dynamically -->
                             </select>
+                            <div class="sidebar-actions-row" style="display: flex; gap: 8px; margin-top: 10px;">
+                                <button class="btn btn-secondary btn-sm" id="btn-select-all" style="flex: 1; padding: 6px; font-size: 11px;">Select All</button>
+                                <button class="btn btn-secondary btn-sm" id="btn-select-none" style="flex: 1; padding: 6px; font-size: 11px;">Clear</button>
+                            </div>
                         </div>
                         
                         <div class="questions-nav" id="questions-list-container">
@@ -135,12 +147,15 @@
                                         <h2 id="tagger-title">Question 1</h2>
                                         <span class="badge-marks" id="tagger-badge-marks">1 mark</span>
                                     </div>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-secondary btn-icon" id="btn-toggle-adjust" title="Adjust Question Data">
-                                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <div class="action-buttons" style="display: flex; gap: 8px; align-items: center;">
+                                        <button class="btn-worksheet-toggle" id="btn-tagger-worksheet-toggle" data-qid="" style="height: 36px; padding: 0 12px; font-size: 12px; border-radius: var(--radius-sm);">
+                                            + Worksheet
+                                        </button>
+                                        <button class="btn btn-secondary btn-icon" id="btn-toggle-adjust" title="Adjust Question Data" style="height: 36px; padding: 0 12px; border-radius: var(--radius-sm);">
+                                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                                             </svg>
-                                            <span>Adjust Layout</span>
+                                            <span style="font-size: 12px;">Adjust Layout</span>
                                         </button>
                                     </div>
                                 </div>
@@ -214,6 +229,17 @@
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <div class="modal-divider" style="margin: 8px 0;"></div>
+                                
+                                <!-- Class Seen Section -->
+                                <div class="class-seen-manager">
+                                    <h4>Class Seen Status</h4>
+                                    <p class="bulk-help-text" style="margin-bottom: 8px;">Check the cohorts that have already worked on/seen this exam question:</p>
+                                    <div class="class-seen-checklist" id="tagger-class-checklist" style="display: flex; flex-wrap: wrap; gap: 14px;">
+                                        <!-- Populated dynamically with checkboxes -->
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- PDF Visual Viewer Card -->
@@ -224,6 +250,76 @@
                                 </div>
                                 <div class="viewer-canvas" id="tagger-canvas">
                                     <!-- Dynamic images for pages rendered here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bulk Tagging Panel -->
+                        <div class="tagger-bulk-panel card glass" id="tagger-bulk-panel" style="display: none;">
+                            <div class="bulk-header">
+                                <div class="bulk-identity">
+                                    <span class="badge-section" style="background-color: var(--accent-purple-glow); color: #ffffff; border-color: var(--accent-purple);">Bulk Operations</span>
+                                    <h2>Bulk Tagging</h2>
+                                    <span class="badge-marks" id="bulk-selected-count">0 questions selected</span>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" id="btn-clear-bulk">Clear Selection</button>
+                            </div>
+                            
+                            <div class="bulk-selected-list-box margin-top-sm">
+                                <h4>Selected Questions:</h4>
+                                <div class="bulk-selected-questions-grid" id="bulk-selected-questions-grid">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                            
+                            <div class="bulk-selected-list-box margin-top-sm" id="bulk-existing-tags-section" style="display: none; margin-top: 14px;">
+                                <h4>Existing Tags on Selected Questions:</h4>
+                                <div class="active-tags-list" id="bulk-existing-tags-list" style="margin-top: 6px;">
+                                    <!-- Populated dynamically with aggregated tags -->
+                                </div>
+                            </div>
+                            
+                            <div class="modal-divider margin-top-sm"></div>
+                            
+                            <div class="bulk-actions-box margin-top-sm">
+                                <div class="bulk-action-section">
+                                    <h3>Add Tags in Bulk</h3>
+                                    <p class="bulk-help-text">Type a tag and click Add to append it to all selected questions.</p>
+                                    <div class="tag-input-wrapper margin-top-sm">
+                                        <input type="text" id="bulk-tag-input" placeholder="Type tag and press Enter" class="custom-tag-input">
+                                        <button class="btn btn-primary btn-icon-only" id="btn-bulk-add-tag">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="12" y1="5" x2="12" y2="19M5" y1="12" x2="19" y2="12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="suggested-tags margin-top-sm">
+                                        <span>Quick Suggestions:</span>
+                                        <div class="suggested-list" id="bulk-suggested-tags">
+                                            <button class="btn-tag-suggest-bulk" data-tag="calculus">Calculus</button>
+                                            <button class="btn-tag-suggest-bulk" data-tag="vectors">Vectors</button>
+                                            <button class="btn-tag-suggest-bulk" data-tag="matrices">Matrices</button>
+                                            <button class="btn-tag-suggest-bulk" data-tag="complex-numbers">Complex Numbers</button>
+                                            <button class="btn-tag-suggest-bulk" data-tag="probability">Probability</button>
+                                            <button class="btn-tag-suggest-bulk" data-tag="statistics">Statistics</button>
+                                            <button class="btn-tag-suggest-bulk" data-tag="mechanics">Mechanics</button>
+                                            <button class="btn-tag-suggest-bulk" data-tag="differential-equations">Differential Equations</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bulk-action-section" style="margin-top: 24px;">
+                                    <h3>Remove Tags in Bulk</h3>
+                                    <p class="bulk-help-text">Type a tag and click Remove to strip it from all selected questions.</p>
+                                    <div class="tag-input-wrapper margin-top-sm">
+                                        <input type="text" id="bulk-remove-tag-input" placeholder="Type tag and press Enter to remove" class="custom-tag-input">
+                                        <button class="btn btn-secondary btn-icon-only" id="btn-bulk-remove-tag" style="border-color: var(--accent-rose); color: var(--accent-rose);">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -246,6 +342,24 @@
                         </svg>
                         <input type="text" id="library-search-input" placeholder="Search questions by tag, text keyword, section, or question number..." class="search-input">
                     </div>
+
+                    <!-- Modern Cohort Seen/Unseen Filters Row -->
+                    <div class="search-filters-row">
+                        <div class="filter-control">
+                            <label for="library-class-select">Filter by Class Cohort</label>
+                            <select id="library-class-select" class="filter-select">
+                                <option value="">-- All Classes --</option>
+                            </select>
+                        </div>
+                        <div class="filter-control">
+                            <label for="library-seen-select">Seen / Unseen Status</label>
+                            <select id="library-seen-select" class="filter-select">
+                                <option value="all">Any Status (Seen & Unseen)</option>
+                                <option value="seen">Seen Questions</option>
+                                <option value="unseen">Unseen Questions</option>
+                            </select>
+                        </div>
+                    </div>
                     
                     <div class="tag-cloud-wrapper">
                         <h4>Explore Tags:</h4>
@@ -260,6 +374,96 @@
                     <!-- Populated dynamically -->
                 </div>
             </section>
+
+            <!-- TAB 4: CLASS TRACKER -->
+            <section id="tab-classes" class="tab-panel">
+                <div class="section-header">
+                    <h2>Class Seen Tracker</h2>
+                    <p>Register which VCE exam questions each student cohort or class has completed. Toggled questions will save automatically.</p>
+                </div>
+                
+                <div class="tagging-layout">
+                    <!-- Left Sidebar: Classes list -->
+                    <div class="tagging-sidebar card glass">
+                        <div class="sidebar-header">
+                            <h3>Register Class</h3>
+                            <div class="tag-input-wrapper">
+                                <input type="text" id="class-name-input" placeholder="Enter new class (e.g. 12A)" class="custom-tag-input">
+                                <button class="btn btn-primary btn-icon-only" id="btn-add-class">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19M5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="questions-nav" id="classes-list-container" style="padding: 12px; gap: 8px;">
+                            <!-- Populated dynamically with class list elements -->
+                        </div>
+                    </div>
+
+                    <!-- Right Main Pane: Questions Log -->
+                    <div class="tagging-main-container">
+                        <!-- Empty State if no class selected -->
+                        <div class="empty-state-large card glass" id="classes-empty-state">
+                            <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm14 14v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            <h2>No Class Selected</h2>
+                            <p>Register or select a class cohort from the sidebar to manage their exam question completion seen log.</p>
+                        </div>
+
+                        <!-- Active Classes Tracker Panel -->
+                        <div class="tagger-panel" id="classes-active-panel" style="display: none; grid-template-rows: auto auto 1fr; gap: 16px;">
+                            <!-- Class Seen Info Header & Exam Select -->
+                            <div class="card glass tagger-details-card" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px !important;">
+                                <div class="bulk-identity">
+                                    <span class="badge-section" style="background-color: var(--accent-mint-glow); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3);">Cohort Active</span>
+                                    <h2 id="class-tracker-title" style="font-size: 20px;">Class 12A</h2>
+                                </div>
+                                <div style="display: flex; gap: 12px; align-items: center;">
+                                    <span style="font-size: 13px; color: var(--text-secondary); font-weight: 600;">Paper:</span>
+                                    <select id="class-exam-select" class="custom-select-small" style="width: 220px;">
+                                        <!-- Populated dynamically -->
+                                    </select>
+                                    <button class="btn btn-secondary btn-sm" id="btn-delete-class" style="border-color: var(--accent-rose); color: var(--accent-rose); padding: 8px 12px;">
+                                        Delete Class
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Syllabus Coverage Analytics Grid -->
+                            <div class="card glass class-analytics-card" id="class-analytics-card" style="display: flex; flex-direction: column; padding: 16px 24px !important; gap: 12px; margin-bottom: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
+                                    <h3 style="margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; color: var(--text-main);">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-purple);">
+                                            <line x1="18" y1="20" x2="18" y2="10"/>
+                                            <line x1="12" y1="20" x2="12" y2="4"/>
+                                            <line x1="6" y1="20" x2="6" y2="14"/>
+                                        </svg>
+                                        Syllabus Domain Coverage
+                                    </h3>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Calculated from completed question tags</span>
+                                </div>
+                                <div class="syllabus-grid" id="class-syllabus-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                                    <!-- Progress bars populated dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Questions list seen toggle checkboxes -->
+                            <div class="card glass tagger-viewer-card" style="padding: 24px !important;">
+                                <div class="viewer-header" style="background: none; border: none; padding: 0 0 16px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color);">
+                                    <h3>Seen Register Checklist</h3>
+                                    <span class="viewer-pages-indicator" id="class-seen-stats">0 of 0 Completed</span>
+                                </div>
+                                <div id="class-questions-checklist-grid" class="class-seen-questions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; overflow-y: auto; height: calc(100% - 60px);">
+                                    <!-- Populated dynamically with question seen switch cards -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -268,17 +472,22 @@
         <div class="modal-content glass">
             <button class="modal-close" id="btn-close-modal">
                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18M6" y1="6" x2="18" y2="18"/>
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
             <div class="modal-body-split">
                 <!-- Left Details Column -->
                 <div class="modal-info-column">
                     <div class="modal-exam-title" id="modal-exam-title">VCE Specialist Mathematics 2025</div>
-                    <div class="modal-q-identity">
-                        <span class="badge-section" id="modal-badge-section">Section B</span>
-                        <h2 id="modal-q-title">Question 1</h2>
-                        <span class="badge-marks" id="modal-badge-marks">10 marks</span>
+                    <div class="modal-q-identity" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <div>
+                            <span class="badge-section" id="modal-badge-section">Section B</span>
+                            <h2 id="modal-q-title" style="margin-top: 4px;">Question 1</h2>
+                            <span class="badge-marks" id="modal-badge-marks">10 marks</span>
+                        </div>
+                        <button class="btn-worksheet-toggle" id="btn-modal-worksheet-toggle" data-qid="" style="height: 36px; padding: 0 12px; font-size: 12px; border-radius: var(--radius-sm);">
+                            + Worksheet
+                        </button>
                     </div>
                     
                     <div class="modal-divider"></div>
@@ -291,8 +500,21 @@
                     <div class="modal-divider"></div>
 
                     <div class="modal-section-title">Question Tags</div>
-                    <div class="modal-tags-list" id="modal-tags-list">
-                        <!-- Dynamic tags -->
+                    <div class="modal-tags-inner" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div class="modal-tags-list" id="modal-tags-list" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <!-- Dynamic tags -->
+                        </div>
+                        <div class="modal-tag-input-group" style="display: flex; gap: 6px; margin-top: 4px;">
+                            <input type="text" id="modal-tag-input" placeholder="Add study tag..." style="flex: 1; padding: 6px 10px; font-size: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.05); color: var(--text-color); outline: none;">
+                            <button id="btn-modal-add-tag" class="btn-primary" style="padding: 6px 12px; font-size: 11px; border-radius: var(--radius-sm); white-space: nowrap; cursor: pointer;">+ Add</button>
+                        </div>
+                    </div>
+
+                    <div class="modal-divider"></div>
+
+                    <div class="modal-section-title">Class Seen Log</div>
+                    <div class="modal-tags-list" id="modal-classes-seen-list" style="gap: 6px;">
+                        <!-- Dynamic cohort badges -->
                     </div>
                 </div>
                 
@@ -303,6 +525,78 @@
                     </div>
                     <div class="modal-canvas" id="modal-canvas">
                         <!-- PNG Page Previews -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Worksheet Builder Basket Widget -->
+    <div class="worksheet-basket-launcher" id="worksheet-basket-launcher" title="Open Worksheet Builder">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+        <span class="basket-badge" id="worksheet-basket-badge">0</span>
+    </div>
+
+    <!-- Worksheet Builder Slide-out Drawer Overlay -->
+    <div class="builder-drawer-overlay" id="builder-drawer-overlay" style="display: none;">
+        <div class="builder-drawer glass">
+            <div class="drawer-header">
+                <div>
+                    <h2>Worksheet Builder</h2>
+                    <p>Compile custom revision papers & vector worksheets</p>
+                </div>
+                <button class="drawer-close" id="btn-close-drawer">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="drawer-body">
+                <!-- Inputs Section -->
+                <div class="drawer-section">
+                    <h4>Worksheet Metadata</h4>
+                    <div class="input-field-group">
+                        <label for="worksheet-title-input">Document Title</label>
+                        <input type="text" id="worksheet-title-input" placeholder="e.g. Specialist Calculus Review" class="custom-tag-input" style="width: 100%; border-radius: var(--radius-sm);">
+                    </div>
+                    <div class="input-field-group margin-top-sm" style="margin-top: 10px;">
+                        <label for="worksheet-subtitle-input">Subtitle / Instructions</label>
+                        <input type="text" id="worksheet-subtitle-input" placeholder="e.g. Complete Section A without CAS calculators" class="custom-tag-input" style="width: 100%; border-radius: var(--radius-sm);">
+                    </div>
+                </div>
+                
+                <div class="modal-divider" style="margin: 14px 0;"></div>
+                
+                <!-- Queue Section -->
+                <div class="drawer-section flex-grow" style="display: flex; flex-direction: column; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin:0;">Selected Questions</h4>
+                        <button class="btn btn-secondary" id="btn-clear-basket" style="padding: 4px 8px; font-size: 11px; border-color: rgba(239, 68, 68, 0.4); color: var(--accent-rose);">Clear All</button>
+                    </div>
+                    <div class="builder-queue-list" id="builder-queue-list" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                        <!-- Questions will populate dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Floating Action / Compile PDF -->
+                <div class="drawer-footer" style="margin-top: 14px; position: relative;">
+                    <button class="btn btn-primary" id="btn-compile-worksheet" style="width: 100%; justify-content: center; gap: 8px; padding: 14px 20px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                        </svg>
+                        <span>Compile & Download PDF</span>
+                    </button>
+                    
+                    <!-- Loading Status Overlay -->
+                    <div class="compile-loader-container" id="compile-loader" style="display: none;">
+                        <div class="loader-spinner"></div>
+                        <span id="compile-loader-text">Compiling PDF vector sheets...</span>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,181 @@
+Number of pages: 32
+--- PAGE 1 ---
+Specialist Mathematics  
+Examination 2
+Question and Answer Book
+VCE Examination – Tuesday 11 November 2025
+ 
+• Reading time is 15 minutes: 11.45 am to 12 noon 
+• Writing time is 2 hours: 12 noon to 2.00 pm 
+Approved materials
+• Protractors, set squares and aids for curve sketching
+• One bound reference
+• One approved CAS calculator or CAS software, and one scientific calculator
+Materials supplied
+• Question and Answer Book of 24 pages
+• Formula Sheet
+• Multiple-Choice Answer Sheet
+Instructions
+• Follow the instructions on your Multiple-Choice Answer Sheet.
+• At the end of the examination, place your Multiple-Choice Answer Sheet inside the front 
+cover of this book.
+Students are not permitted to bring mobile phones and/or any unauthorised electronic 
+devices into the examination room.
+ 
+Contents  pages
+Section A (20 questions, 20 marks)   2–10
+Section B (6 questions, 60 marks)   12–23
+Write your student number in the boxes above. Letter
+SUPERVISOR TO ATTACH
+PROCESSING LABEL HERE
+© VCAA 
+--- PAGE 2 ---
+Section A – Multiple-choice questions
+Instructions
+• Answer all questions in pencil on your Multiple-Choice Answer Sheet.
+• Choose the response that is correct for the question.
+• A correct answer scores 1; an incorrect answer scores 0.
+• Marks will not be deducted for incorrect answers.
+• No marks will be given if more than one answer is completed for any question.
+• Unless otherwise indicated, the diagrams in this book are not drawn to scale.
+• Take the acceleration due to gravity to have magnitude g m s−2, where g = 9.8
+ 
+Question 1
+A tiger is a type of cat. 
+Consider the following statement. 
+‘If I have a tiger, then I have a cat.’
+The contrapositive of this statement is 
+A. if I do not have a tiger, then I do not have a cat. 
+B. if I have a cat, then I have a tiger.
+C. if I do not have a cat, then I do not have a tiger.
+D. if I do not have a tiger, then I have a different type of cat.
+Question 2 
+Consider the following statement.
+‘If /g99/g99/g32f ()00 , then the graph of f necess
+--- PAGE 3 ---
+Question 3 
+The graph of y xa
+bx c/g32/g14
+/g14
+2
+ has an asymptote given by yx/g32/g16/g141
+2
+1
+4  and a y-intercept of −2. 
+The values of a, b and c are 
+A. a = 2, b = −2, c = −1
+B. a = 2, b = 2, c = −1
+C. a = −2, b = −2, c = 1
+D. a = −2, b = −2, c = −1
+Question 4
+Consider the following algorithm used to estimate a volume of revolution.
+define f(x) 
+    return √ x + 1
+sum 🡠 0
+a 🡠 1
+b 🡠 3
+left 🡠 a
+while left ≤ b
+    volume 🡠 π(f(left))2
+    sum 🡠 sum + volume
+    left 🡠 left + 1
+end while 
+print sum
+The algorithm above will print the value
+A. 5π
+B. 9π
+C. 14π
+D. 29π
+2025 VCE Specialist Mathematics Examination 2 Section A Page 3 of 24 
+Do not write in this area.
+Do not write in this area.
+--- PAGE 4 ---
+Question 5
+The equation za zb z32 52 0/g14/g14/g16/g32, where a, b ∈ R and z ∈ C, has a solution z = 2 − 3i.
+The value of ab is
+A. −232
+B. −64
+C. −8
+D. 0
+Question 6
+Let z ∈ C.
+Given that z =1 and z ≠ 1, Re 1
+1/g16
+/g167
+/g169/g168
+/g183
+/g185/g184z  is
+A. − 1
+2
+B. 0
+C. 1
+2
+D. 3
+2
+Question 7
+Using the substitution u /g32cos( )/g84, 1
+2
+2
+10
+2 sin( )
+cos( )
+/g84
+/g84
+/g83
+/g84
+/g14/g179d  can be expressed as
+A. u u
+u du1
+10
+2 /g16
+/g14/g179
+/g83
+B. 1 1
+10
+1
+/g14/g14
+/g167
+/g169/g168
+/g183
+/g185/g184/g179u du
+C. 1 1
+10
+2 /g16/g14
+/g167
+/g169/g168
+/g183
+/g185/g184/g179u du
+/g83
+D. 1 1
+10
+1
+/g16/g14
+/g167
+/g169/g168
+/g183
+/g185/g184/g179u du
+Page 4 of 24 Section A 2025 VCE Specialist Mathematics Examination 2 
+Do not write in this area.
+Do not write in this area.
+--- PAGE 5 ---
+Question 8
+Consider the direction field below.
+21−1−2
+y
+xO
+1
+−1
+−2
+2
+The direction field best represents the differential equation
+A. dy
+dx xy/g32/g162
+B. dy
+dx xy/g32/g162
+C. dy
+dx yx/g32/g16
+D. dy
+dx xy/g32/g16
+2025 VCE Specialist Mathematics Examination 2 Section A Page 5 of 24 
+Do not write in this area.
+Do not write in this area.

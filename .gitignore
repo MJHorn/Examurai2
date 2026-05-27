@@ -1,0 +1,29 @@
+# Python Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache & Compiled Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# OS Specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Examurai Local Runtime & Dynamic Data
+data/uploads/
+static/images/*/
+
+# Optional: Ignore the local JSON database to prevent syncing personal tags/data
+# data/db.json

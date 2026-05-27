@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examurai - VCE Exam Segmenter & Tagging Library</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <h1>Examurai</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="import">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="feather">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                    <span>Import Center</span>
+                </button>
+                <button class="nav-item" data-tab="tagging">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="feather">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01"/>
+                    </svg>
+                    <span>Question Tagger</span>
+                </button>
+                <button class="nav-item" data-tab="search">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="feather">
+                        <circle cx="11" cy="11" r="8M21 21l-4.35-4.35"/>
+                    </svg>
+                    <span>Tag Library Search</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-status">
+                    <span class="status-indicator online"></span>
+                    <span>Local Session Active</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- TAB 1: IMPORT CENTER -->
+            <section id="tab-import" class="tab-panel active">
+                <div class="section-header">
+                    <h2>Import Center</h2>
+                    <p>Load new VCE exams into the segmenter. The system splits the paper, processes the sections, and renders page previews automatically.</p>
+                </div>
+                
+                <div class="import-grid">
+                    <!-- Upload Box -->
+                    <div class="card glass upload-card" id="drop-zone">
+                        <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13a4 4 0 0 1-8 0M12 9v8"/>
+                            </svg>
+                        </div>
+                        <h3>Drag & Drop Exam PDF</h3>
+                        <p>or click to browse your files</p>
+                        <span class="file-limits">Accepts official VCE Exam PDF papers</span>
+                        
+                        <!-- Uploading/Processing Overlay -->
+                        <div class="upload-loader" id="upload-loader" style="display: none;">
+                            <div class="spinner"></div>
+                            <h4>Extracting Questions & Pages...</h4>
+                            <p>This will take a few seconds as PyMuPDF renders the high-res diagrams.</p>
+                        </div>
+                    </div>
+
+                    <!-- Imported List -->
+                    <div class="card glass list-card">
+                        <h3 class="card-title">Currently Imported Exams</h3>
+                        <div class="exams-list" id="exams-list">
+                            <!-- Populated dynamically -->
+                            <div class="empty-state">
+                                <p>No exams imported yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: QUESTION TAGGER -->
+            <section id="tab-tagging" class="tab-panel">
+                <div class="tagging-layout">
+                    <!-- Left Sidebar: Questions list -->
+                    <div class="tagging-sidebar card glass">
+                        <div class="sidebar-header">
+                            <h3>Select Question</h3>
+                            <select id="tagging-exam-select" class="custom-select">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="questions-nav" id="questions-list-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right Main Pane: Visual Editor & Pages -->
+                    <div class="tagging-main-container">
+                        <!-- Empty State if no question selected -->
+                        <div class="empty-state-large card glass" id="tagger-empty-state">
+                            <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13a4 4 0 0 1-8 0M8 10h.01M12 10h.01M16 10h.01"/>
+                            </svg>
+                            <h2>No Question Selected</h2>
+                            <p>Choose an exam and select a question from the sidebar to inspect pages, edit text, and apply custom study tags.</p>
+                        </div>
+
+                        <!-- Active Tagger Panel -->
+                        <div class="tagger-panel" id="tagger-active-panel" style="display: none;">
+                            <!-- Question Details Card (Metadata, Custom Edit, Tags) -->
+                            <div class="card glass tagger-details-card">
+                                <div class="detail-top">
+                                    <div class="question-identity">
+                                        <span class="badge-section" id="tagger-badge-section">Section A</span>
+                                        <h2 id="tagger-title">Question 1</h2>
+                                        <span class="badge-marks" id="tagger-badge-marks">1 mark</span>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-secondary btn-icon" id="btn-toggle-adjust" title="Adjust Question Data">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                            </svg>
+                                            <span>Adjust Layout</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Adjust Metadata Drawer (collapsible) -->
+                                <div class="adjust-drawer" id="adjust-drawer" style="display: none;">
+                                    <form id="adjust-form">
+                                        <div class="form-grid">
+                                            <div class="form-group">
+                                                <label for="adj-section">Section</label>
+                                                <select id="adj-section" class="custom-select-small">
+                                                    <option value="Section A">Section A</option>
+                                                    <option value="Section B">Section B</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="adj-number">Number</label>
+                                                <input type="number" id="adj-number" min="1" max="100" class="custom-input-small">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="adj-marks">Marks</label>
+                                                <input type="number" id="adj-marks" min="1" max="50" class="custom-input-small">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="adj-pages">Page List (comma-separated)</label>
+                                                <input type="text" id="adj-pages" class="custom-input-small" placeholder="e.g. 12, 13">
+                                            </div>
+                                        </div>
+                                        <div class="form-group margin-top-sm">
+                                            <label for="adj-text">Extracted Raw Text</label>
+                                            <textarea id="adj-text" rows="4" class="custom-textarea-small"></textarea>
+                                        </div>
+                                        <div class="adjust-actions">
+                                            <button type="submit" class="btn btn-primary btn-sm">Save Adjustments</button>
+                                            <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-adjust">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Tags Section -->
+                                <div class="tags-manager">
+                                    <h4>Active Study Tags</h4>
+                                    <div class="active-tags-list" id="tagger-active-tags">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                    
+                                    <h4 class="margin-top-sm">Add Tags</h4>
+                                    <div class="tag-input-wrapper">
+                                        <input type="text" id="custom-tag-input" placeholder="Type custom tag and press Enter" class="custom-tag-input">
+                                        <button class="btn btn-primary btn-icon-only" id="btn-add-custom-tag">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="12" y1="5" x2="12" y2="19M5" y1="12" x2="19" y2="12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="suggested-tags">
+                                        <span>Quick Suggestions:</span>
+                                        <div class="suggested-list" id="tagger-suggested-tags">
+                                            <!-- Core topics tag list toggleable by click -->
+                                            <button class="btn-tag-suggest" data-tag="calculus">Calculus</button>
+                                            <button class="btn-tag-suggest" data-tag="vectors">Vectors</button>
+                                            <button class="btn-tag-suggest" data-tag="matrices">Matrices</button>
+                                            <button class="btn-tag-suggest" data-tag="complex-numbers">Complex Numbers</button>
+                                            <button class="btn-tag-suggest" data-tag="probability">Probability</button>
+                                            <button class="btn-tag-suggest" data-tag="statistics">Statistics</button>
+                                            <button class="btn-tag-suggest" data-tag="mechanics">Mechanics</button>
+                                            <button class="btn-tag-suggest" data-tag="kinematics">Kinematics</button>
+                                            <button class="btn-tag-suggest" data-tag="differential-equations">Differential Equations</button>
+                                            <button class="btn-tag-suggest" data-tag="multiple-choice">Multiple Choice</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PDF Visual Viewer Card -->
+                            <div class="card glass tagger-viewer-card">
+                                <div class="viewer-header">
+                                    <h3>Visual Page Canvas</h3>
+                                    <span class="viewer-pages-indicator" id="tagger-pages-indicator">Pages: 12, 13</span>
+                                </div>
+                                <div class="viewer-canvas" id="tagger-canvas">
+                                    <!-- Dynamic images for pages rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: TAG LIBRARY SEARCH -->
+            <section id="tab-search" class="tab-panel">
+                <div class="section-header">
+                    <h2>Tag Library & Search</h2>
+                    <p>Filter, explore, and retrieve exam questions based on custom study tags, keywords, or exam sections.</p>
+                </div>
+
+                <!-- Filters and Search Toolbar -->
+                <div class="card glass search-toolbar">
+                    <div class="search-input-group">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="search-icon-svg">
+                            <circle cx="11" cy="11" r="8M21 21l-4.35-4.35"/>
+                        </svg>
+                        <input type="text" id="library-search-input" placeholder="Search questions by tag, text keyword, section, or question number..." class="search-input">
+                    </div>
+                    
+                    <div class="tag-cloud-wrapper">
+                        <h4>Explore Tags:</h4>
+                        <div class="tag-cloud" id="library-tag-cloud">
+                            <!-- Populated dynamically with unique tags and item counts -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Grid -->
+                <div class="search-results-grid" id="search-results-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Question View Overlay Modal -->
+    <div class="modal-overlay" id="question-modal" style="display: none;">
+        <div class="modal-content glass">
+            <button class="modal-close" id="btn-close-modal">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18M6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <div class="modal-body-split">
+                <!-- Left Details Column -->
+                <div class="modal-info-column">
+                    <div class="modal-exam-title" id="modal-exam-title">VCE Specialist Mathematics 2025</div>
+                    <div class="modal-q-identity">
+                        <span class="badge-section" id="modal-badge-section">Section B</span>
+                        <h2 id="modal-q-title">Question 1</h2>
+                        <span class="badge-marks" id="modal-badge-marks">10 marks</span>
+                    </div>
+                    
+                    <div class="modal-divider"></div>
+                    
+                    <div class="modal-section-title">Extracted Raw Text</div>
+                    <div class="modal-text-content" id="modal-text-content">
+                        <!-- Question text snippet -->
+                    </div>
+
+                    <div class="modal-divider"></div>
+
+                    <div class="modal-section-title">Question Tags</div>
+                    <div class="modal-tags-list" id="modal-tags-list">
+                        <!-- Dynamic tags -->
+                    </div>
+                </div>
+                
+                <!-- Right Rendered Pages Column -->
+                <div class="modal-visual-column">
+                    <div class="modal-canvas-header">
+                        <h3>Official Question Sheet Preview</h3>
+                    </div>
+                    <div class="modal-canvas" id="modal-canvas">
+                        <!-- PNG Page Previews -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="js/app.js"></script>
+</body>
+</html>

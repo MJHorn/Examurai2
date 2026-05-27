@@ -81,7 +81,79 @@ def get_questions(exam_id):
     exam = db["exams"].get(exam_id)
     if not exam:
         return jsonify({"error": "Exam not found"}), 404
+        
+    # Dynamically compute y_offset_ratio for each question if PDF is uploaded
+    pdf_path = os.path.join(UPLOAD_FOLDER, f"{exam_id}.pdf")
+    if os.path.exists(pdf_path):
+        try:
+            import fitz
+            doc = fitz.open(pdf_path)
+            for q in exam.get("questions", []):
+                if "y_offset_ratio" not in q:
+                    if q.get("pages"):
+                        page_num = q["pages"][0]
+                        if page_num <= len(doc):
+                            page = doc[page_num - 1]
+                            q_num = q.get("number")
+                            # Try searching "Question X"
+                            rects = page.search_for(f"Question {q_num}")
+                            if not rects:
+                                # Try double space "Question  X"
+                                rects = page.search_for(f"Question  {q_num}")
+                            if rects:
+                                y0 = rects[0].y0
+                                q["y_offset_ratio"] = y0 / page.rect.height
+                            else:
+                                q["y_offset_ratio"] = 0.0
+            doc.close()
+        except Exception as e:
+            print(f"Error computing dynamic y_offset: {e}")
+            
     return jsonify(exam)
+
+@app.route('/api/exams/<exam_id>', methods=['DELETE'])
+def delete_exam(exam_id):
+    db = load_db()
+    if "exams" not in db or exam_id not in db["exams"]:
+        return jsonify({"error": "Exam not found"}), 404
+        
+    # Delete PDF file
+    pdf_path = os.path.join(UPLOAD_FOLDER, f"{exam_id}.pdf")
+    if os.path.exists(pdf_path):
+        try:
+            os.remove(pdf_path)
+        except Exception as e:
+            print(f"Error removing PDF: {e}")
+            
+    # Delete images directory
+    img_dir = os.path.join(STATIC_IMAGES_DIR, exam_id)
+    if os.path.exists(img_dir):
+        try:
+            import shutil
+            shutil.rmtree(img_dir)
+        except Exception as e:
+            print(f"Error removing image folder: {e}")
+            
+    # Remove from database
+    del db["exams"][exam_id]
+    save_db(db)
+    
+    return jsonify({"success": True})
+
+@app.route('/api/exams/<exam_id>/rename', methods=['POST'])
+def rename_exam(exam_id):
+    data = request.json
+    if not data or 'title' not in data or not data['title'].strip():
+        return jsonify({"error": "Exam title is required"}), 400
+        
+    db = load_db()
+    if "exams" not in db or exam_id not in db["exams"]:
+        return jsonify({"error": "Exam not found"}), 404
+        
+    db["exams"][exam_id]["title"] = data['title'].strip()
+    save_db(db)
+    
+    return jsonify({"success": True, "title": db["exams"][exam_id]["title"]})
 
 @app.route('/api/import', methods=['POST'])
 def import_exam():

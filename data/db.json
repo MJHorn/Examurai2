@@ -1,12 +1,12 @@
 {
   "exams": {
-    "2025_specialist_maths_2": {
-      "id": "2025_specialist_maths_2",
-      "title": "VCE 2025 Specialist Maths 2",
+    "2025_specialistmaths2": {
+      "id": "2025_specialistmaths2",
+      "title": "VCE 2025 Specialist Maths Exam 2",
       "num_pages": 32,
       "questions": [
         {
-          "id": "2025_specialist_maths_2_a_q1",
+          "id": "2025_specialistmaths2_a_q1",
           "section": "Section A",
           "number": 1,
           "pages": [
@@ -14,15 +14,10 @@
           ],
           "marks": 1,
           "text": "Question 1\nA tiger is a type of cat. \nConsider the following statement. \n‘If I have a tiger, then I have a cat.’\nThe contrapositive of this statement is \nA.\t if I do not have a tiger, then I do not have a cat. \nB.\t if I have a cat, then I have a tiger.\nC.\t if I do not have a cat, then I do not have a tiger.\nD.\t if I do not have a tiger, then I have a different type of cat.",
-          "tags": [
-            "contrapositive",
-            "proof",
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q2",
+          "id": "2025_specialistmaths2_a_q2",
           "section": "Section A",
           "number": 2,
           "pages": [
@@ -30,13 +25,10 @@
           ],
           "marks": 1,
           "text": "Question 2 \nConsider the following statement.\n‘If \u001f\u001f\n\u001e\nf ( )\n0\n0, then the graph of f necessarily has a point of inflection at x = 0.’ \nA counter-example that disproves this statement is when\nA.\t\nf x\nx\n( )\nsin\n( )\n\u001f\n\u001e1\nB.\t\nf x\nx\nx\n( ) \u001f\n\u001e\n2\n1\n2\nC.\t\nf x\nx\n( ) =\n1\n3\nD.\t\nf x\nx\nx\n( ) \u001f\n\u001e\n4\nPage 2 of 24\b\nSection A",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q3",
+          "id": "2025_specialistmaths2_a_q3",
           "section": "Section A",
           "number": 3,
           "pages": [
@@ -44,13 +36,10 @@
           ],
           "marks": 1,
           "text": "Question 3 \nThe graph of y\nx\na\nbx\nc\n\u001f\n\u001e\n\u001e\n2\n has an asymptote given by y\nx\n\u001f \u001e\n\u001d\n1\n2\n1\n4 and a y-intercept of −2. \nThe values of a, b and c are \nA.\t a = 2, b = −2, c = −1\nB.\t a = 2, b = 2, c = −1\nC.\t a = −2, b = −2, c = 1\nD.\t a = −2, b = −2, c = −1",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q4",
+          "id": "2025_specialistmaths2_a_q4",
           "section": "Section A",
           "number": 4,
           "pages": [
@@ -58,13 +47,10 @@
           ],
           "marks": 1,
           "text": "Question 4\nConsider the following algorithm used to estimate a volume of revolution.\ndefine f(x) \n    return √ x + 1\nsum 🡠 0\na 🡠 1\nb 🡠 3\nleft 🡠 a\nwhile left ≤ b\n    volume 🡠 π(f(left))2\n    sum 🡠 sum + volume\n    left 🡠 left + 1\nend while \nprint sum\nThe algorithm above will print the value\nA.\t 5π\nB.\t 9π\nC.\t 14π\nD.\t 29π\n\nPage 3 of 24",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q5",
+          "id": "2025_specialistmaths2_a_q5",
           "section": "Section A",
           "number": 5,
           "pages": [
@@ -72,13 +58,10 @@
           ],
           "marks": 1,
           "text": "Question 5\nThe equation z\naz\nbz\n3\n2\n52\n0\n\u001f\n\u001f\n\u001e\n\u001d , where a, b ∈ R and z ∈ C, has a solution z = 2 - 3i.\nThe value of ab is\nA.\t -232\nB.\t -64\nC.\t -8\nD.\t 0",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q6",
+          "id": "2025_specialistmaths2_a_q6",
           "section": "Section A",
           "number": 6,
           "pages": [
@@ -86,13 +69,10 @@
           ],
           "marks": 1,
           "text": "Question 6\nLet z ∈ C.\nGiven that z =1 and z ≠ 1, Re\n1\n1\u001f\n\u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\nz  is\nA.\t −1\n2\nB.\t 0\nC.\t\n1\n2\nD.\t\n3\n2",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q7",
+          "id": "2025_specialistmaths2_a_q7",
           "section": "Section A",
           "number": 7,
           "pages": [
@@ -100,13 +80,10 @@
           ],
           "marks": 1,
           "text": "Question 7\nUsing the substitution u \u001f cos( )\n\u001e , 1\n2\n2\n1\n0\n2 sin (\n)\ncos( )\n\u001f\n\u001f\n\u001e\n\u001f\n\u001d\n\u001c\nd  can be expressed as\nA.\t\nu\nu\nu du\n1\n1\n0\n2\n\u001f\n\u001e\n\u001d\n\u001c\nB.\t\n1\n1\n1\n0\n1\n\u001f \u001f\n\u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\n\u0018\nu du\nC.\t\n1\n1\n1\n0\n2\n\u001f \u001e\n\u001d\n\u001c\u001b\n\u001a\n\u0019\u0018\n\u0017\nu du\n\u0016\nD.\t\n1\n1\n1\n0\n1\n\u001f \u001e\n\u001d\n\u001c\u001b\n\u001a\n\u0019\u0018\n\u0017\nu du\nPage 4 of 24\b\nSection A",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q8",
+          "id": "2025_specialistmaths2_a_q8",
           "section": "Section A",
           "number": 8,
           "pages": [
@@ -114,13 +91,10 @@
           ],
           "marks": 1,
           "text": "Question 8\nConsider the direction field below.\n2\n1\n−1\n−2\ny\nx\nO\n1\n−1\n−2\n2\nThe direction field best represents the differential equation\nA.\t\ndy\ndx\nx\ny\n\u001f\n\u001e\n2\nB.\t\ndy\ndx\nx\ny\n\u001f\n\u001e\n2\nC.\t\ndy\ndx\ny\nx\n\u001f\n\u001e\nD.\t\ndy\ndx\nx\ny\n\u001f\n\u001e\n\nPage 5 of 24",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q9",
+          "id": "2025_specialistmaths2_a_q9",
           "section": "Section A",
           "number": 9,
           "pages": [
@@ -128,13 +102,10 @@
           ],
           "marks": 1,
           "text": "Question 9 \nA parametric curve is given by x\nkt y\nekt\n=\n=\n,\n, where k is a positive constant. The curve is rotated \nabout the x-axis from t = a to t = b, where b > a, to form a surface of revolution. \nThe area of this surface is given by\nA.\t 2\n2 2\n2\n\u001f\ne\nk t\ne\ndt\nkt\nkt\na\nb\n\u001e\n\u001d\nB.\t 2\n1\n\u001f\nk\ne\ne dt\nkt\nkt\na\nb\n\u001e\n\u001d\nC.\t 2\n1\n2\n\u001f\n\u001e\n\u001d\nu du\ne\ne\nka\nkb\nD.\t 2\n1\n2\n\u001f\nu\nu du\ne\ne\nka\nkb",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q10",
+          "id": "2025_specialistmaths2_a_q10",
           "section": "Section A",
           "number": 10,
           "pages": [
@@ -142,13 +113,10 @@
           ],
           "marks": 1,
           "text": "Question 10\nThe region bounded by the curve given by y\nx\n\u001f\n\u001e\n3\n1\ncos\n( ), for 0 ≤ y ≤ a, where a > 0, and the line x = 0 \nis rotated about the y-axis to form a solid of revolution. The volume of the solid is \u001f\n\u001f\n4\n3 3\n8\n\u001e\n\u001d\n\u001c.\nThe value of a is\nA.\t π\n4\nB.\t π\n3\nC.\t π\n2\nD.\t π\nPage 6 of 24\b\nSection A",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q11",
+          "id": "2025_specialistmaths2_a_q11",
           "section": "Section A",
           "number": 11,
           "pages": [
@@ -156,13 +124,10 @@
           ],
           "marks": 1,
           "text": "Question 11\nGiven that y(x) is a solution to the differential equation dy\ndx\nx y\n=\n2\n3, where y(1) = 3, the domain of y is \nA.\t x \u001f \u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\n7\n6\n1\n3\nB.\t x \u001f \u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\n7\n6\n1\n3\nC.\t x \u001f \u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\n7\n6\n1\n3\nD.\t x \u001f \u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\n7\n6\n1\n3",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q12",
+          "id": "2025_specialistmaths2_a_q12",
           "section": "Section A",
           "number": 12,
           "pages": [
@@ -170,13 +135,10 @@
           ],
           "marks": 1,
           "text": "Question 12\nA particle moves along a straight line with constant acceleration. It passes through a point A with \nvelocity u  m s−1 and then through a point B with velocity v  m s−1. \nThe velocity of the particle at the midpoint of the line segment AB is given by \nA.\t u\nv\n+\n2\nB.\t u\nu\nv\n+\n+\n2\nC.\t u\nv\n2\n2\n2\n+\nD.\t\nu\nv\n2\n2\n2\n+",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q13",
+          "id": "2025_specialistmaths2_a_q13",
           "section": "Section A",
           "number": 13,
           "pages": [
@@ -184,13 +146,10 @@
           ],
           "marks": 1,
           "text": "Question 13\nFrom an open window, a person projects a ball vertically up using an outstretched arm so the ball does \nnot strike any part of the building. The point of projection of the ball is 50 m above the ground and its \nvelocity of projection is 20 m s−1. \nThe time, in seconds, it takes for the ball to reach the tray of a truck that is 1 m above the ground \ndirectly below the point of projection is closest to\nA.\t 1.72 \nB.\t 5.80\nC.\t 5.83 \nD.\t 1.75 \n\nPage 7 of 24",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q14",
+          "id": "2025_specialistmaths2_a_q14",
           "section": "Section A",
           "number": 14,
           "pages": [
@@ -198,13 +157,10 @@
           ],
           "marks": 1,
           "text": "Question 14\nFor non-zero vectors a and b, if \n\n\na b\na\nb\n\u001f\n\u001e\n\u001d\n, then the angle between aand b is\nA.\t 0\nB.\t π\n4\nC.\t π\n2\nD.\t 3\n4\nπ",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q15",
+          "id": "2025_specialistmaths2_a_q15",
           "section": "Section A",
           "number": 15,
           "pages": [
@@ -212,13 +168,10 @@
           ],
           "marks": 1,
           "text": "Question 15\nConsider the two planes described by the equations 2x + 2y + z = 2 and ax + 4z = 1, where a is a \npositive constant.\nThe angle between the two planes is cos\u001f \u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\n1 2\n3 .\nThe value of a satisfies the equation\nA.\t a\na\n\u001f\n\u001e\n\u001f\n2\n16\n2\nB.\t\n2\n4\n3\n16\n3\n2\n2\na\na\n\u001f\n\u001f\n\u001e\nC.\t 2\n4\n3\n16\n2\na\na\n\u001f\n\u001e\n\u001f\nD.\t\n2\n4\n16\n2\n3\n2\na\na",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q16",
+          "id": "2025_specialistmaths2_a_q16",
           "section": "Section A",
           "number": 16,
           "pages": [
@@ -226,13 +179,10 @@
           ],
           "marks": 1,
           "text": "Question 16\nThe position vector of a particle at time t is given by \n\n\nr\ni\nj\n( )t\nne\nt\nt\n\u001f\n\u001e\n\u001e2\n2 , where n is a positive constant. \nFor what value of n is the particle’s acceleration perpendicular to its velocity when t = 1\n2? \nA.\t 2e\nB.\t\ne0 5\n2\n.\nC.\t\ne\n2\nD.\t\ne\n2 2\nPage 8 of 24\b\nSection A",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q17",
+          "id": "2025_specialistmaths2_a_q17",
           "section": "Section A",
           "number": 17,
           "pages": [
@@ -240,13 +190,10 @@
           ],
           "marks": 1,
           "text": "Question 17\nThe acceleration vector of a particle that starts from rest is given by \n\n\n\n\na\ni\nj\nk\n( )\ncos(\n)\nsin(\n)\nt\nt\nt\ne\nt\n\u001f\n\u001e\n\u001d\n\u001d\n4\n2\n10\n2\n6\n2\n, where t ≥ 0.\nThe velocity vector of the particle, v(t), is given by\nA.\t\n\n\n\n\nv\ni\nj\n( )\nsin(\n)\ncos(\n)\nt\nt\nt\ne\nt\n\u001f\n\u001e\n\u001e\n2\n2\n5\n2\n3\n2\n+\nk\nB.\t\n\n\n\n\nv\ni\nj\n3\n( )\nsin (\n)\ncos(\n)\n(\n)\nt\nt\nt\ne\nt\n\u001f\n\u001e\n\u001d\n\u001c\n\u001b \u001d\n\u001d\n\u001e\n2\n2\n5\n2\n1\n1\n2\nk\nC.\t\n\n\n\n\nv\ni\nj\n3\n( )\nsin (\n)\ncos(\n)\n(\n)\nt\nt\nt\ne\nt\n\u001f\n\u001e\n\u001e\n\u001d\n\u001c\n\u001e\n\u001e\n2\n2\n5\n2\n1\n1\n2\n+\nk\nD.\t\n\n\n\n\nv\ni\nj 12\n( )\nsin(\n)\ncos(\n)\nt\nt\nt\ne\nt\n\u001f \u001e\n\u001d\n\u001d\n\u001e\n8\n2\n20\n2\n2 k",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q18",
+          "id": "2025_specialistmaths2_a_q18",
           "section": "Section A",
           "number": 18,
           "pages": [
@@ -254,13 +201,10 @@
           ],
           "marks": 1,
           "text": "Question 18 \nThe lines given by \n\n\n\n\n\n\nr\ni\nj\nk\ni\nj\nk\n1\n2\n3\n4\n( )\n\u001f\n\u001f\n\u001e\n\u001d\n\u001c\n\u001d\n\u001c \u001d\n\u001b\n\u001a\nr\n and \n\n\n\n\n\nr\ni\nk\ni\nj\nk\n2( )\n\u001f\n\u001f\n\u001e \u001d\n\u001d\n\u001d \u001c\n\u001b\n\u001a\ns\n intersect at the \npoint (4, 3, t ), where λ, m ∈ R and r, s and t are real constants.\nThe values of r, s and t respectively are \nA.\t 2, 3 and 5\nB.\t 5, 3 and 5 \nC.\t 5, 5 and 8\nD.\t 5, 8 and 5",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q19",
+          "id": "2025_specialistmaths2_a_q19",
           "section": "Section A",
           "number": 19,
           "pages": [
@@ -268,13 +212,10 @@
           ],
           "marks": 1,
           "text": "Question 19\nThe plane with equation x + y + z = a, where a ∈ R, intersects the coordinate axes at three points that \nform the vertices of a triangle. \nThe area of this triangle is given by\nA.\t\na2 3\n4\nB.\t\na2 3\n2\nC.\t\na2\n4\nD.\t a2 3\n\nPage 9 of 24",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_a_q20",
+          "id": "2025_specialistmaths2_a_q20",
           "section": "Section A",
           "number": 20,
           "pages": [
@@ -282,13 +223,10 @@
           ],
           "marks": 1,
           "text": "Question 20\nLet P ~\n,\nN \u001f\u001e\n\u001d\n2 22 , Q ~\n,\nN 3 32\n\u001f\n\u001e, R ~\n,\nN 5 62\n\u001f\n\u001e and Z ~\n,\nN(\n)\n0 1 .\nGiven that P, Q and R are independent random variables, Pr 3\n2\n25\nP\nQ\nR\n\u001f\n\u001e\n\u001d\n\u001c\n\u001b is equal to\nA.\t Pr Z \u001f\n\u001e\n\u001d\n\u001c\u001c\n\u001b\n\u001a\n\u0019\u0019\n5 3\n3\nB.\t Pr (Z > 5)\nC.\t Pr Z \u001f\n\u001e\n\u001d\n\u001c\u001c\n\u001b\n\u001a\n\u0019\u0019\n5 66\n11\nD.\t Pr Z \u001f\n\u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\n30\n7\nPage 10 of 24\b\nSection A",
-          "tags": [
-            "vcaaspecialistexam2",
-            "mcq"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_b_q1",
+          "id": "2025_specialistmaths2_b_q1",
           "section": "Section B",
           "number": 1,
           "pages": [
@@ -297,12 +235,10 @@
           ],
           "marks": 10,
           "text": "Section B\nInstructions\n•\t Answer all questions in the spaces provided.\n•\t Write your responses in English.\n•\t Unless otherwise specified, an exact answer is required for each question.\n•\t In questions where more than one mark is available, appropriate working must be shown.\n•\t Unless otherwise indicated, the diagrams in this book are not drawn to scale.\n•\t Take the acceleration due to gravity to have magnitude g m s−2, where g = 9.8\n\b\nQuestion 1 (10 marks) \na.\t\nSketch the graph of y x\nx\nx\nx\n( ) \u001f\n\u001e\n\u001e\n3\n2\n3\n on the axes below. \nLabel the asymptotes with their equations, and label the turning point and the point \nof inflection with their coordinates. Give the coordinates of the point of inflection \ncorrect to one decimal place.\b\n3 marks\ny\nx\n2\n1\n3\n4\n−2\n−1\n−3\n−4\n1\n−1\n−2\n2\nO\nb.\t\nThe region bounded by the graph of y\nx\nx\nx\n\u001f\n\u001e\n\u001e\n3\n2\n3\n, the coordinate axes and the line \nx = 2 is rotated about the x-axis to form a solid of revolution. \ni.\t Write down a definite integral that, when evaluated, will give the volume of the \nsolid of revolution. \b\n1 mark\n\b\n\b\nPage 12 of 24\b\nSection B\n\n[Page 13]\n\nii.\t Find the volume of the solid of revolution correct to two decimal places.\b\n1 mark\n\b\n\b\nc.\t\nFind the equations of the vertical asymptotes of the curve given by y\nx\nx\nx\n\u001f\n\u001e\n\u001d\n3\n5\n2\n3\n.\b\n1 mark\n\b\n\b\n\b\nd.\t\nA family of curves is given by y x\nx\nx\nax\n( ) \u001f\n\u001e\n\u001e\n3\n2\n3\n, where a ∈ R.\ni.\t Consider the case where the graph has a stationary point P. \nFind the y-coordinate of P in terms of a. \b\n1 mark\n\b\n\b\n\b\nii.\t For a given value of a, the graph has no stationary points. \nFind the equations of the vertical asymptotes of the graph in this case.\b\n1 mark\n\b\n\b\n\b\n\b\niii.\t For a given value of a, the graph will have a point of inflection at x = 2.\nFind the value of a.\b\n2 marks\n\b\n\b\n\b\n\b\n\nPage 13 of 24",
-          "tags": [
-            "vcaaspecialistexam2"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_b_q2",
+          "id": "2025_specialistmaths2_b_q2",
           "section": "Section B",
           "number": 2,
           "pages": [
@@ -311,12 +247,10 @@
           ],
           "marks": 10,
           "text": "Question 2 (10 marks)\na.\t\nSketch { :\n,\n}\nz zz\nz\nC\n\u001f\n\u001e\n4\n on the Argand plane below.\b\n1 mark\nIm(z)\nRe(z)\n2\n1\n3\n−2\n−1\n−3\n1\n−1\n−2\n−3\n2\n3\nO\nb.\t\ni.\t Show that z\nz\ni\nz\ni z\nC\n:\n,\n\u001f\n\u001e\n\u001f\n\u001f\n\u001d\n\u001c\n\u001b\n2\n3\n may be expressed as y\nx\n=\n3 .\b\n2 marks\n\b\n\b\n\b\n\b\nii.\t Sketch z\nz\ni\nz\ni z\nC\n:\n,\n\u001f\n\u001e\n\u001f\n\u001f\n\u001d\n\u001c\n\u001b\n2\n3\n on the Argand plane in part a.\b\n1 mark\nc.\t\ni.\t Find the points of intersection of the curves defined in part a and in part b.i, \nexpressing your answers in the form a + ib, where a, b ∈ R.\b\n2 marks\n\b\n\b\n\b\n\b\nii.\t Label these points on the Argand plane in part a. \b\n1 mark\nPage 14 of 24\b\nSection B\n\n[Page 15]\n\nConsider the points P and Q labelled on the Argand plane below. \nIm(z)\nRe(z)\n2\n1\n3\n−2\n−1\n−3\n1\n−1\n−2\n−3\n2\n3\nO\nQ (3, 0)\n3\n3 3\n, \n2\n2\nP\n\n\n\n\n\n\n\nd.\t\nA ray originating at point P and passing through point Q has the equation  \nArg(\n)\nz\nz\n\u001f\n\u001e\n0\n\u001d , where q is a radian measure. \nWrite down the values of z0 and q. \b\n1 mark\n\b\n\b\ne.\t\nFind the area of the minor segment bounded by the chord connecting the  \npoints P and Q and the circle given by z = 3.\nGive your answer in the form cp + d, where c, d ∈ R.\b\n2 marks\n\b\n\b\n\b\n\b\n\nPage 15 of 24",
-          "tags": [
-            "vcaaspecialistexam2"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_b_q3",
+          "id": "2025_specialistmaths2_b_q3",
           "section": "Section B",
           "number": 3,
           "pages": [
@@ -325,12 +259,10 @@
           ],
           "marks": 10,
           "text": "Question 3 (10 marks)\nA tank initially contains 5 kg of salt dissolved in 3000 litres of water. Salty water that \ncontains 0.1 kg of salt per litre of water enters the tank at a rate of 20 litres per minute. \nThe solution is kept thoroughly mixed and drains from the tank via a tap at the same rate \nof 20 litres per minute.\na.\t\nBy considering concentration, explain whether the quantity of salt in the tank \t\nincreases with time.\b\n1 mark\n\b\n\b\nb.\t\nLet Q denote the quantity of salt, in kilograms, in the tank at time t minutes. \nShow that Q satisfies the differential equation dQ\ndt\nQ\n\u001f\n\u001e\n300\n150\n.\b\n1 mark\n\b\n\b\n\b\n\b\nc.\t\nUsing Euler’s method with a step size of 15 minutes, find Q(30), the approximate \nquantity of salt in the tank after 30 minutes. \nGive your answer in kilograms, correct to two decimal places.\b\n2 marks\n\b\n\b\n\b\n\b\nPage 16 of 24\b\nSection B\n\n[Page 17]\n\nd.\t\nUse calculus to solve the differential equation dQ\ndt\nQ\n\u001f\n\u001e\n300\n150\n, expressing Q in terms of t.\b\n3 marks\n\b\n\b\n\b\n\b\n\b\n\b\n\b\n\b\n\b\ne.\t\nWhat value does the quantity of salt in the tank approach as time approaches infinity? \nGive your answer in kilograms.\b\n1 mark\n\b\n\b\nf.\t\nFind the time taken for the quantity of salt in the tank to reach 100 kg.\b\n1 mark\n\b\n\b\ng.\t\nWhen the quantity of salt in the tank reaches 100 kg, the tap draining the tank \nis turned off. Assume that the tank does not overflow and there is no change  \nto the inflow rate. \nAfter the tap is turned off, how many minutes does it take for the concentration  \nof salt in the tank to reach 1\n20 kg L−1?\b\n1 mark\n\b\n\b\n\b\n\b\n\nPage 17 of 24",
-          "tags": [
-            "vcaaspecialistexam2"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_b_q4",
+          "id": "2025_specialistmaths2_b_q4",
           "section": "Section B",
           "number": 4,
           "pages": [
@@ -339,12 +271,10 @@
           ],
           "marks": 10,
           "text": "Question 4 (10 marks)\nThe path of a moving particle with position vector \n\n\nr\ni\n( )\ncos\ncos\nsin\nsin\nt\nt\nt\nt\nt\n\u001f\n\u001e \u001d \u001c\n\u001b\n\u001a\u0019\n\u0018\n\u0017\u0016\n\u001b\n\u001a\u0019\n\u0018\n\u0017\u0016 \u0015\n\u001e \u001d \u001c\n\u001b\n\u001a\u0019\n\u0018\n\u0017\u0016\n\u001b\n5\n4\n5\n2\n5\n4\n5\n2\n\u001a\u0019\n\u0018\n\u0017\u0016\nj\nis shown below for time t ≥ 0.\nAll lengths are in metres and time is measured in seconds.\ny\nx\n10\n5\n−10\n−5\n−5\n−10\n5\n10\nO\na.\t\nWrite down the coordinates of the particle’s starting point.\b\n1 mark\n\b\n\b\nb.\t\nOn the graph above, draw an arrow from the point (9, 0) to indicate the direction \nof motion of the particle.\b\n1 mark\nc.\t\nFind the value of t for which the particle will first return to its starting point.\b\n1 mark\n\b\n\b\nPage 18 of 24\b\nSection B\n\n[Page 19]\n\nd.\t\nShow that the speed of the particle, in m s−1, at time t can be expressed as \n125 100\n3\n2\n\u001f\n\u001e\n\u001d\u001c\n\u001b\n\u001a\u0019\ncos\nt .\b\n3 marks\n\b\n\b\n\b\n\b\n\b\n\b\n\b\n\b\n\b\n\b\ne.\t\nWhat is the maximum speed of the particle in m s-1?\b\n1 mark\n\b\n\b\nf.\t\nOn the graph on page 18, trace the path of the particle for t ∈ [0, p]. \b\n1 mark\ng.\t\nFind the length of the path traced in part f, giving your answer in metres,  \ncorrect to one decimal place.\b\n2 marks\n\b\n\b\n\b\n\b\n\nPage 19 of 24",
-          "tags": [
-            "vcaaspecialistexam2"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_b_q5",
+          "id": "2025_specialistmaths2_b_q5",
           "section": "Section B",
           "number": 5,
           "pages": [
@@ -353,12 +283,10 @@
           ],
           "marks": 10,
           "text": "Question 5 (10 marks)\nConsider three planes defined by the equations P1 : 2x + 9z = 8, P2 : 3x + 6y + 5z = 7 and \nP3 : x + 9y - 3z = 7.\na.\t\nFind the point of intersection of the three planes.\b\n1 mark\n\b\n\b\nb.\t\ni.\t Find a vector that gives the direction of the line of intersection of the planes  \nP2 and P3.\b\n2 marks\n\b\n\b\n\b\n\b\nii.\t Find a set of parametric equations that give the coordinates of the points that lie \non this line of intersection.\b\n1 mark\n\b\n\b\n\b\n\b\nPage 20 of 24\b\nSection B\n\n[Page 21]\n\nc.\t\nFind the shortest distance from the point (1, 1, 2) to the plane P3. \b\n2 marks\n\b\n\b\n\b\n\b\n\b\n\b\nd.\t\nConsider a family of planes, Ψ, with equation 6x + 27z = m, where m ∈ N.\ni.\t Show that the plane P1 is parallel to each member of Ψ.\b\n1 mark\n\b\n\b\nii.\t Find all values of m for which the shortest distance between plane P1 and the \nplane of the form 6x + 27z = m is 23\n3 85\n.\b\n3 marks\n\b\n\b\n\b\n\b\n\b\n\b\n\nPage 21 of 24",
-          "tags": [
-            "vcaaspecialistexam2"
-          ]
+          "tags": []
         },
         {
-          "id": "2025_specialist_maths_2_b_q6",
+          "id": "2025_specialistmaths2_b_q6",
           "section": "Section B",
           "number": 6,
           "pages": [
@@ -367,9 +295,7 @@
           ],
           "marks": 10,
           "text": "Question 6 (10 marks)\nThe volume of water, V mL, consumed by a student during a school day may be assumed \nto be normally distributed with a mean of 1000 mL and a standard deviation of 80 mL.\na.\t\ni.\t Write down the mean and standard deviation of the sampling distribution for the \naverage volume of water consumed by randomly selected samples of 25 students. \nGive your answers in millilitres.\b\n1 mark\n\b\n\b\nii.\t What is the probability, correct to four decimal places, that the average volume \nof water consumed by a random sample of 25 students on a particular school day \nis more than 970 mL? \b\n1 mark\n\b\n\b\nThe canteen at a particular school stocks two brands of water in bottles, Wasser and Apa.\nThe manufacturer of Wasser bottled water knows that the volume of water dispensed into \nbottles may be assumed to be normally distributed with a standard deviation of 5 mL. \nEngineers at the company take a random sample of 30 bottles and measure the volume \nof water in each bottle. The sample mean is found to be 750 mL.\nb.\t\nFind a 95% confidence interval for the mean volume of water dispensed into each  \nWasser bottle. \nGive your values in millilitres, correct to one decimal place.\b\n1 mark\n\b\nc.\t\nThe engineers decide to take 300 random samples, each containing 30 bottles, and \ncalculate the respective 95% confidence intervals. All samples are independent. \nIn how many of these confidence intervals would the engineers expect the value \nof the true mean volume dispensed to be included?\b\n1 mark\n\b\nd.\t\nWhat is the minimum size of the sample required to ensure that the difference \nbetween the sample mean and the mean volume dispensed is no more than 1 mL \nat the 95% confidence level?\b\n1 mark\n\b\n\b\nPage 22 of 24\b\nSection B\n\n[Page 23]\n\nEnd of Question and Answer Book\nThe volume of water dispensed into Apa water bottles may be assumed to be normally \ndistributed with a mean of 750 mL and a standard deviation of 5 mL. After a service, \na random sample of 50 bottles gave a sample mean of 748 mL. The company now claims \nthat the mean volume of water dispensed is less than the stated mean of 750 mL.\nA one-tailed statistical test at the 1% level of significance is proposed.\ne.\t\nWrite down the null and alternative hypotheses that will be used in testing the \ncompany’s claim.\b\n1 mark\n\b\n\b\nf.\t\ni.\t Determine the p value for this test. \nGive your answer correct to four decimal places.\b\n1 mark\n\b\n\b\nii.\t Is the company’s claim correct? \nExplain your conclusion in terms of the p value.\b\n1 mark\n\b\n\b\ng.\t\nAt the 1% level of significance for a sample size of 50 bottles, find the critical value \nof the sample mean, below which a sample mean value would support the conclusion \nthat the mean volume of water dispensed is now less than 750 mL. \nGive your answer correct to three decimal places.\b\n1 mark\n\b\n\b\nh.\t\nAssume that, after the service, the true mean volume of water in the Apa bottles was \nfound to be 747.5 mL and that the population standard deviation, σ, is 5 mL.\nAt the 1% level of significance, for a sample size of 50, find the probability that the \ncompany will conclude that the service has not reduced the mean volume of water \nin an Apa bottle. \nGive your answer correct to three decimal places. \b\n1 mark\n\b\n\b\n\nPage 23 of 24",
-          "tags": [
-            "vcaaspecialistexam2"
-          ]
+          "tags": []
         }
       ]
     }

@@ -619,15 +619,15 @@ h1, h2, h3, h4 {
 .tagger-panel {
     display: grid;
     grid-template-rows: auto 1fr;
-    gap: 20px;
+    gap: 12px;
     height: 100%;
 }
 
 .tagger-details-card {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 20px !important;
+    gap: 6px;
+    padding: 8px 16px !important;
 }
 
 .detail-top {
@@ -680,13 +680,12 @@ h1, h2, h3, h4 {
     margin-top: 14px;
 }
 
-/* Tags management */
-.tags-manager h4 {
-    font-size: 13px;
+.tags-manager h4, .class-seen-manager h4 {
+    font-size: 11.5px;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .active-tags-list {
@@ -791,10 +790,10 @@ h1, h2, h3, h4 {
 .custom-tag-input {
     background-color: rgba(10, 12, 16, 0.5);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     color: var(--text-main);
-    padding: 10px 14px;
-    font-size: 13px;
+    padding: 6px 12px;
+    font-size: 12px;
     outline: none;
     width: 100%;
     transition: all 0.3s ease;
@@ -809,8 +808,8 @@ h1, h2, h3, h4 {
 .suggested-tags {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 12px;
+    gap: 8px;
+    font-size: 11.5px;
 }
 
 .suggested-tags span {
@@ -829,9 +828,9 @@ h1, h2, h3, h4 {
     background-color: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
-    padding: 4px 10px;
+    padding: 2px 8px;
     border-radius: 50px;
-    font-size: 11px;
+    font-size: 10.5px;
     cursor: pointer;
     font-family: var(--font-body);
     transition: all 0.2s ease;
@@ -890,7 +889,7 @@ h1, h2, h3, h4 {
 
 .viewer-canvas img {
     width: 100%;
-    max-width: 800px;
+    max-width: 1100px;
     height: auto;
     border-radius: var(--radius-md);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -1586,13 +1585,13 @@ h1, h2, h3, h4 {
 .class-seen-checkbox-label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12.5px;
+    gap: 6px;
+    font-size: 11.5px;
     color: var(--text-secondary);
     cursor: pointer;
     background-color: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
-    padding: 6px 12px;
+    padding: 4px 10px;
     border-radius: 50px;
     transition: all 0.2s ease;
     user-select: none;

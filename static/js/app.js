@@ -229,9 +229,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         </span>
                     </div>
                 </div>
-                <button class="btn btn-secondary btn-sm btn-select-exam" data-id="${exam.id}">
-                    Select Exam
-                </button>
+                <div class="exam-actions" style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary btn-sm btn-select-exam" data-id="${exam.id}">
+                        Select Exam
+                    </button>
+                    <button class="btn btn-secondary btn-sm btn-rename-exam" data-id="${exam.id}">
+                        Rename
+                    </button>
+                    <button class="btn btn-secondary btn-sm btn-delete-exam" data-id="${exam.id}" style="border-color: var(--accent-rose); color: var(--accent-rose);">
+                        Delete
+                    </button>
+                </div>
             </div>
         `).join('');
 
@@ -241,6 +249,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 const examId = btn.getAttribute('data-id');
                 state.currentExamId = examId;
                 switchTab('tagging');
+            });
+        });
+
+        // Attach event listeners to rename buttons
+        document.querySelectorAll('.btn-rename-exam').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const examId = btn.getAttribute('data-id');
+                const examTitle = btn.closest('.exam-item').querySelector('h4').textContent;
+                const newTitle = prompt(`Enter new title for "${examTitle}":`, examTitle);
+                
+                if (newTitle && newTitle.trim() && newTitle.trim() !== examTitle) {
+                    const result = await apiRequest(`/api/exams/${examId}/rename`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title: newTitle.trim() })
+                    });
+                    if (result && result.success) {
+                        refreshExamsList();
+                    }
+                }
+            });
+        });
+
+        // Attach event listeners to delete buttons
+        document.querySelectorAll('.btn-delete-exam').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const examId = btn.getAttribute('data-id');
+                const examTitle = btn.closest('.exam-item').querySelector('h4').textContent;
+                if (confirm(`Are you sure you want to delete "${examTitle}"? This will permanently remove all its questions, tags, uploads, and page images.`)) {
+                    const result = await apiRequest(`/api/exams/${examId}`, {
+                        method: 'DELETE'
+                    });
+                    if (result && result.success) {
+                        // Clear selected exam if it was the one deleted
+                        if (state.currentExamId === examId) {
+                            state.currentExamId = '';
+                            state.questions = [];
+                            state.currentQuestion = null;
+                        }
+                        refreshExamsList();
+                    }
+                }
             });
         });
     }
@@ -561,9 +611,36 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSuggestedTagsHighlight(question.tags);
 
         // Render PDF page images in visual canvas
-        taggerCanvas.innerHTML = question.pages.map(page => `
-            <img src="/images/${state.currentExamId}/page_${page}.png" alt="Page ${page}" loading="lazy">
+        taggerCanvas.innerHTML = question.pages.map((page, idx) => `
+            <img src="/images/${state.currentExamId}/page_${page}.png" alt="Page ${page}" class="canvas-page-img" data-idx="${idx}" loading="lazy">
         `).join('');
+
+        // Scroll to the question's y-offset once the first image is loaded
+        const firstImg = taggerCanvas.querySelector('.canvas-page-img[data-idx="0"]');
+        if (firstImg) {
+            const performScroll = () => {
+                const ratio = question.y_offset_ratio || 0;
+                if (ratio > 0) {
+                    const imgHeight = firstImg.clientHeight || firstImg.height;
+                    const scrollTop = firstImg.offsetTop + (imgHeight * ratio) - 70;
+                    taggerCanvas.scrollTo({
+                        top: scrollTop,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    taggerCanvas.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+            };
+
+            if (firstImg.complete) {
+                setTimeout(performScroll, 100);
+            } else {
+                firstImg.addEventListener('load', performScroll);
+            }
+        }
 
         // Prepopulate layout adjuster fields
         adjSection.value = question.section;
@@ -1322,9 +1399,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Render PNG images
-        modalCanvas.innerHTML = q.pages.map(page => `
-            <img src="/images/${examId}/page_${page}.png" alt="Page ${page}">
+        modalCanvas.innerHTML = q.pages.map((page, idx) => `
+            <img src="/images/${examId}/page_${page}.png" alt="Page ${page}" class="modal-page-img" data-idx="${idx}">
         `).join('');
+
+        // Scroll to the question's y-offset once the first image is loaded inside modal
+        const firstModalImg = modalCanvas.querySelector('.modal-page-img[data-idx="0"]');
+        if (firstModalImg) {
+            const performModalScroll = () => {
+                const ratio = q.y_offset_ratio || 0;
+                if (ratio > 0) {
+                    const imgHeight = firstModalImg.clientHeight || firstModalImg.height;
+                    const scrollTop = firstModalImg.offsetTop + (imgHeight * ratio) - 70;
+                    modalCanvas.scrollTo({
+                        top: scrollTop,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    modalCanvas.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+            };
+
+            if (firstModalImg.complete) {
+                setTimeout(performModalScroll, 150);
+            } else {
+                firstModalImg.addEventListener('load', performModalScroll);
+            }
+        }
 
         // Update worksheet builder button in modal
         if (btnModalWorksheetToggle) {

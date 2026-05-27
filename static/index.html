@@ -195,49 +195,49 @@
                                     </form>
                                 </div>
 
-                                <!-- Tags Section -->
-                                <div class="tags-manager">
-                                    <h4>Active Study Tags</h4>
-                                    <div class="active-tags-list" id="tagger-active-tags">
-                                        <!-- Populated dynamically -->
-                                    </div>
-                                    
-                                    <h4 class="margin-top-sm">Add Tags</h4>
-                                    <div class="tag-input-wrapper">
-                                        <input type="text" id="custom-tag-input" placeholder="Type custom tag and press Enter" class="custom-tag-input">
-                                        <button class="btn btn-primary btn-icon-only" id="btn-add-custom-tag">
-                                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                <line x1="12" y1="5" x2="12" y2="19M5" y1="12" x2="19" y2="12"/>
-                                            </svg>
-                                        </button>
-                                    </div>
+                                <!-- Side-by-Side Details Grid -->
+                                <div class="tagger-details-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: 2px;">
+                                    <!-- Tags Section -->
+                                    <div class="tags-manager">
+                                        <h4>Active Study Tags</h4>
+                                        <div class="active-tags-list" id="tagger-active-tags">
+                                            <!-- Populated dynamically -->
+                                        </div>
+                                        
+                                        <h4 class="margin-top-sm" style="margin-top: 8px;">Add Tags</h4>
+                                        <div class="tag-input-wrapper">
+                                            <input type="text" id="custom-tag-input" placeholder="Type custom tag and press Enter" class="custom-tag-input">
+                                            <button class="btn btn-primary btn-icon-only" id="btn-add-custom-tag">
+                                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="12" y1="5" x2="12" y2="19M5" y1="12" x2="19" y2="12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
 
-                                    <div class="suggested-tags">
-                                        <span>Quick Suggestions:</span>
-                                        <div class="suggested-list" id="tagger-suggested-tags">
-                                            <!-- Core topics tag list toggleable by click -->
-                                            <button class="btn-tag-suggest" data-tag="calculus">Calculus</button>
-                                            <button class="btn-tag-suggest" data-tag="vectors">Vectors</button>
-                                            <button class="btn-tag-suggest" data-tag="matrices">Matrices</button>
-                                            <button class="btn-tag-suggest" data-tag="complex-numbers">Complex Numbers</button>
-                                            <button class="btn-tag-suggest" data-tag="probability">Probability</button>
-                                            <button class="btn-tag-suggest" data-tag="statistics">Statistics</button>
-                                            <button class="btn-tag-suggest" data-tag="mechanics">Mechanics</button>
-                                            <button class="btn-tag-suggest" data-tag="kinematics">Kinematics</button>
-                                            <button class="btn-tag-suggest" data-tag="differential-equations">Differential Equations</button>
-                                            <button class="btn-tag-suggest" data-tag="multiple-choice">Multiple Choice</button>
+                                        <div class="suggested-tags" style="margin-top: 8px;">
+                                            <span>Quick Suggestions:</span>
+                                            <div class="suggested-list" id="tagger-suggested-tags">
+                                                <!-- Core topics tag list toggleable by click -->
+                                                <button class="btn-tag-suggest" data-tag="calculus">Calculus</button>
+                                                <button class="btn-tag-suggest" data-tag="vectors">Vectors</button>
+                                                <button class="btn-tag-suggest" data-tag="matrices">Matrices</button>
+                                                <button class="btn-tag-suggest" data-tag="complex-numbers">Complex Numbers</button>
+                                                <button class="btn-tag-suggest" data-tag="probability">Probability</button>
+                                                <button class="btn-tag-suggest" data-tag="statistics">Statistics</button>
+                                                <button class="btn-tag-suggest" data-tag="mechanics">Mechanics</button>
+                                                <button class="btn-tag-suggest" data-tag="kinematics">Kinematics</button>
+                                                <button class="btn-tag-suggest" data-tag="differential-equations">Differential Equations</button>
+                                                <button class="btn-tag-suggest" data-tag="multiple-choice">Multiple Choice</button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div class="modal-divider" style="margin: 8px 0;"></div>
-                                
-                                <!-- Class Seen Section -->
-                                <div class="class-seen-manager">
-                                    <h4>Class Seen Status</h4>
-                                    <p class="bulk-help-text" style="margin-bottom: 8px;">Check the cohorts that have already worked on/seen this exam question:</p>
-                                    <div class="class-seen-checklist" id="tagger-class-checklist" style="display: flex; flex-wrap: wrap; gap: 14px;">
-                                        <!-- Populated dynamically with checkboxes -->
+                                    
+                                    <!-- Class Seen Section -->
+                                    <div class="class-seen-manager" style="border-left: 1px solid var(--border-color); padding-left: 24px;">
+                                        <h4>Class Seen Status</h4>
+                                        <div class="class-seen-checklist" id="tagger-class-checklist" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                                            <!-- Populated dynamically with checkboxes -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>

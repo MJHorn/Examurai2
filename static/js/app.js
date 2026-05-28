@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedQuestionIds: [], // Track multiselect bulk questions
         classes: [],             // Classes loaded
         currentClassId: '',      // Active class
-        worksheetQueue: []       // Worksheet Builder queue
+        worksheetQueue: [],      // Worksheet Builder queue
+        previewMode: 'question'  // Active visual canvas mode ('question' or 'report')
     };
 
     // --- DOM ELEMENT REFERENCES ---
@@ -47,6 +48,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const taggerSuggestedTags = document.getElementById('tagger-suggested-tags');
     const taggerCanvas = document.getElementById('tagger-canvas');
     const taggerClassChecklist = document.getElementById('tagger-class-checklist');
+    const taggerDifficultyBadge = document.getElementById('tagger-difficulty-badge');
+    const canvasToggleContainer = document.getElementById('canvas-toggle-container');
+    const btnToggleCanvases = document.querySelectorAll('.btn-toggle-canvas');
+    const modalDifficultyBadge = document.getElementById('modal-difficulty-badge');
+    const subpartsPerformanceSection = document.getElementById('subparts-performance-section');
+    const subpartsPerformanceContainer = document.getElementById('subparts-performance-container');
+    const modalSubpartsDivider = document.getElementById('modal-subparts-divider');
+    const modalSubpartsSection = document.getElementById('modal-subparts-section');
+    const modalSubpartsContainer = document.getElementById('modal-subparts-container');
+    const taggerCohortPopover = document.getElementById('tagger-cohort-popover');
+    const modalCohortPopover = document.getElementById('modal-cohort-popover');
     
     // Bulk tagger DOM items
     const bulkSelectedCount = document.getElementById('bulk-selected-count');
@@ -116,6 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnTaggerWorksheetToggle = document.getElementById('btn-tagger-worksheet-toggle');
     const btnModalWorksheetToggle = document.getElementById('btn-modal-worksheet-toggle');
 
+    // Sidebar collapse toggle
+    const mainSidebar = document.querySelector('.sidebar');
+    const appEl = document.getElementById('app');
+    const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
+    const navItemWorksheet = document.getElementById('nav-item-worksheet');
+    const navWsCount = document.getElementById('nav-ws-count');
 
 
     // --- ROUTING / TAB INTERACTION ---
@@ -210,11 +228,31 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        examsList.innerHTML = exams.map(exam => `
+        examsList.innerHTML = exams.map(exam => {
+            const hasReport = exam.examiner_report && exam.examiner_report.imported;
+            const reportIcon = hasReport 
+                ? `<span style="color: var(--accent-mint); display: flex; align-items: center; gap: 4px;">
+                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-mint); width: 12px; height: 12px;">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    Report Loaded (${exam.examiner_report.num_pages}p)
+                   </span>`
+                : `<span style="color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); width: 12px; height: 12px;">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="9" x2="15" y2="9"></line>
+                        <line x1="9" y1="13" x2="15" y2="13"></line>
+                        <line x1="9" y1="17" x2="15" y2="17"></line>
+                    </svg>
+                    No Report
+                   </span>`;
+
+            return `
             <div class="exam-item">
                 <div class="exam-info">
                     <h4>${exam.title}</h4>
-                    <div class="exam-meta">
+                    <div class="exam-meta" style="display: flex; gap: 12px; flex-wrap: wrap;">
                         <span>
                             <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6"/>
@@ -227,11 +265,16 @@ document.addEventListener('DOMContentLoaded', () => {
                             </svg>
                             ${exam.num_questions} Questions
                         </span>
+                        ${reportIcon}
                     </div>
                 </div>
                 <div class="exam-actions" style="display: flex; gap: 8px;">
                     <button class="btn btn-secondary btn-sm btn-select-exam" data-id="${exam.id}">
                         Select Exam
+                    </button>
+                    <button class="btn btn-secondary btn-sm btn-upload-report" data-id="${exam.id}" style="position: relative; overflow: hidden;">
+                        <span>${hasReport ? 'Update Report' : 'Upload Report'}</span>
+                        <input type="file" class="report-file-input" data-id="${exam.id}" accept="application/pdf" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 100px;">
                     </button>
                     <button class="btn btn-secondary btn-sm btn-rename-exam" data-id="${exam.id}">
                         Rename
@@ -241,7 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
 
         // Attach event listeners to select buttons
         document.querySelectorAll('.btn-select-exam').forEach(btn => {
@@ -249,6 +293,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const examId = btn.getAttribute('data-id');
                 state.currentExamId = examId;
                 switchTab('tagging');
+            });
+        });
+
+        // Attach event listeners to report file inputs
+        document.querySelectorAll('.report-file-input').forEach(input => {
+            input.addEventListener('change', async (e) => {
+                const examId = input.getAttribute('data-id');
+                const file = input.files[0];
+                if (file) {
+                    await uploadReportFile(examId, file);
+                }
             });
         });
 
@@ -341,6 +396,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (result && result.success) {
             alert(`Successfully imported: ${result.exam.title}!`);
+            refreshExamsList();
+        }
+    }
+
+    async function uploadReportFile(examId, file) {
+        const h4Text = uploadLoader.querySelector('h4');
+        const pText = uploadLoader.querySelector('p');
+        const oldH4 = h4Text ? h4Text.textContent : "Extracting Questions & Pages...";
+        const oldP = pText ? pText.textContent : "This will take a few seconds as PyMuPDF renders the high-res diagrams.";
+
+        if (h4Text) h4Text.textContent = "Processing Examiner's Report...";
+        if (pText) pText.textContent = "Extracting cohort metrics and rendering report pages...";
+        uploadLoader.style.display = 'flex';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const result = await apiRequest(`/api/exams/${examId}/import-report`, {
+            method: 'POST',
+            body: formData
+        });
+
+        uploadLoader.style.display = 'none';
+        if (h4Text) h4Text.textContent = oldH4;
+        if (pText) pText.textContent = oldP;
+
+        if (result && result.success) {
+            alert("Successfully imported Examiner's Report!");
             refreshExamsList();
         }
     }
@@ -592,6 +675,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function renderSubpartsBreakdown(subparts, containerElement) {
+        if (!subparts || subparts.length === 0) {
+            containerElement.innerHTML = '';
+            return;
+        }
+
+        containerElement.innerHTML = subparts.map(s => {
+            const label = s.label.toUpperCase();
+            const pct = s.percentage;
+            const avg = s.average;
+            const max = s.max_mark;
+            
+            let diffClass = 'diff-easy';
+            if (pct < 45) {
+                diffClass = 'diff-hard';
+            } else if (pct < 75) {
+                diffClass = 'diff-medium';
+            }
+            
+            return `
+                <div class="subpart-row" style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 600;">
+                        <span style="color: var(--text-main); font-family: var(--font-heading);">Part ${label} <span style="font-weight:400; color:var(--text-muted); font-size: 10px; margin-left: 4px;">(${avg}/${max} mk)</span></span>
+                        <span class="subpart-badge-percentage ${diffClass}" style="font-size: 10.5px; padding: 1px 6px; border-radius: 4px; font-family: var(--font-heading); font-weight:700;">${pct}% Score</span>
+                    </div>
+                    <div class="subpart-bar-bg" style="height: 5px; background: rgba(255, 255, 255, 0.04); border-radius: 50px; overflow: hidden; width: 100%;">
+                        <div class="subpart-bar-fill ${diffClass}-fill" style="width: ${pct}%; height: 100%; border-radius: 50px; transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
     function selectQuestion(qid) {
         const question = state.questions.find(q => q.id === qid);
         if (!question) return;
@@ -604,23 +720,93 @@ document.addEventListener('DOMContentLoaded', () => {
         taggerBadgeMarks.textContent = `${question.marks} ${question.marks === 1 ? 'mark' : 'marks'}`;
         taggerPagesIndicator.textContent = `Pages: ${question.pages.join(', ')}`;
 
+        // Close popovers during selection shifts
+        if (taggerCohortPopover) {
+            taggerCohortPopover.style.display = 'none';
+        }
+
+        // Display Difficulty Badge if cohort score exists
+        const hasSubparts = question.subparts && question.subparts.length > 0;
+        if (question.percentage_correct !== undefined && question.percentage_correct !== null) {
+            taggerDifficultyBadge.style.display = 'inline-flex';
+            
+            // Clear content but preserve popover
+            const popover = document.getElementById('tagger-cohort-popover');
+            taggerDifficultyBadge.innerHTML = '';
+            
+            // Create text node for the badge score, append a chevron if there are subparts
+            const textNode = document.createTextNode(`Cohort Score: ${question.percentage_correct}%${hasSubparts ? ' ▾' : ''}`);
+            taggerDifficultyBadge.appendChild(textNode);
+            
+            if (popover) {
+                taggerDifficultyBadge.appendChild(popover);
+            }
+            
+            taggerDifficultyBadge.className = 'badge-difficulty';
+            if (question.percentage_correct < 45) {
+                taggerDifficultyBadge.classList.add('diff-hard');
+            } else if (question.percentage_correct < 75) {
+                taggerDifficultyBadge.classList.add('diff-medium');
+            } else {
+                taggerDifficultyBadge.classList.add('diff-easy');
+            }
+        } else {
+            taggerDifficultyBadge.style.display = 'none';
+        }
+
+        // Render Subparts Breakdown inside the popover container
+        if (hasSubparts) {
+            renderSubpartsBreakdown(question.subparts, subpartsPerformanceContainer);
+        } else {
+            subpartsPerformanceContainer.innerHTML = '';
+        }
+
+        // Toggle Canvas Toggle buttons based on whether exam report is loaded
+        const currentExam = state.exams.find(e => e.id === state.currentExamId);
+        const hasReport = currentExam && currentExam.examiner_report && currentExam.examiner_report.imported;
+
+        if (hasReport) {
+            canvasToggleContainer.style.display = 'flex';
+            btnToggleCanvases.forEach(btn => {
+                if (btn.getAttribute('data-mode') === state.previewMode) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        } else {
+            canvasToggleContainer.style.display = 'none';
+            state.previewMode = 'question';
+        }
+
         // Populate active tags
         renderActiveTags(question.tags);
 
         // Highlight active suggested tags
         updateSuggestedTagsHighlight(question.tags);
 
-        // Render PDF page images in visual canvas
-        taggerCanvas.innerHTML = question.pages.map((page, idx) => `
-            <img src="/images/${state.currentExamId}/page_${page}.png" alt="Page ${page}" class="canvas-page-img" data-idx="${idx}" loading="lazy">
+        // Render PDF page images in visual canvas (depending on question vs report mode)
+        const isReportMode = state.previewMode === 'report' && question.report_pages && question.report_pages.length > 0;
+        const pagesToRender = isReportMode ? question.report_pages : question.pages;
+        const imagePathPrefix = isReportMode ? `${state.currentExamId}_report` : state.currentExamId;
+
+        taggerCanvas.innerHTML = pagesToRender.map((page, idx) => `
+            <img src="/images/${imagePathPrefix}/page_${page}.png" alt="Page ${page}" class="canvas-page-img" data-idx="${idx}" loading="lazy">
         `).join('');
 
         // Scroll to the question's y-offset once the first image is loaded
         const firstImg = taggerCanvas.querySelector('.canvas-page-img[data-idx="0"]');
         if (firstImg) {
+            let retryCount = 0;
             const performScroll = () => {
-                const ratio = question.y_offset_ratio || 0;
+                const ratio = isReportMode ? (question.report_y_offset_ratio || 0) : (question.y_offset_ratio || 0);
                 if (ratio > 0) {
+                    // Race condition protection: if the image height is not yet layouted by the browser, retry
+                    if (firstImg.clientHeight === 0 && retryCount < 20) {
+                        retryCount++;
+                        setTimeout(performScroll, 50);
+                        return;
+                    }
                     const imgHeight = firstImg.clientHeight || firstImg.height;
                     const scrollTop = firstImg.offsetTop + (imgHeight * ratio) - 70;
                     taggerCanvas.scrollTo({
@@ -1108,6 +1294,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? seenClasses.map(cls => `<span class="q-result-seen-badge" title="Seen by ${cls.name}">${cls.name.substring(0, 5)}</span>`).join('')
                     : '';
 
+                const difficultyHtml = q.percentage_correct !== undefined && q.percentage_correct !== null
+                    ? `<span class="badge-difficulty ${q.percentage_correct < 45 ? 'diff-hard' : q.percentage_correct < 75 ? 'diff-medium' : 'diff-easy'}" style="margin-left: 0; font-size: 11px;">Cohort: ${q.percentage_correct}%</span>`
+                    : '';
+
                 return `
                     <div class="q-result-card glass" data-examid="${res.exam_id}" data-qid="${q.id}">
                         <div class="q-result-header">
@@ -1115,11 +1305,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="q-result-exam">${res.exam_title}</div>
                                 <h3 class="q-result-title">${q.section} Question ${q.number}</h3>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end;">
                                 <button class="btn-worksheet-toggle" data-qid="${q.id}" data-examid="${res.exam_id}" data-examtitle="${res.exam_title}" data-section="${q.section}" data-number="${q.number}" data-marks="${q.marks}">
                                     + Worksheet
                                 </button>
                                 <span class="badge-marks">${q.marks} mk</span>
+                                ${difficultyHtml}
                             </div>
                         </div>
                         <div class="q-result-body">
@@ -1227,6 +1418,47 @@ document.addEventListener('DOMContentLoaded', () => {
         modalBadgeSection.textContent = q.section;
         modalQTitle.textContent = `Question ${q.number}`;
         modalBadgeMarks.textContent = `${q.marks} ${q.marks === 1 ? 'mark' : 'marks'}`;
+
+        // Close popovers during modal opens
+        if (modalCohortPopover) {
+            modalCohortPopover.style.display = 'none';
+        }
+
+        // Display Difficulty Badge in modal
+        const hasSubparts = q.subparts && q.subparts.length > 0;
+        if (q.percentage_correct !== undefined && q.percentage_correct !== null) {
+            modalDifficultyBadge.style.display = 'inline-flex';
+            
+            // Clear content but preserve popover
+            const popover = document.getElementById('modal-cohort-popover');
+            modalDifficultyBadge.innerHTML = '';
+            
+            // Create text node for the badge score, append a chevron if there are subparts
+            const textNode = document.createTextNode(`Cohort Score: ${q.percentage_correct}%${hasSubparts ? ' ▾' : ''}`);
+            modalDifficultyBadge.appendChild(textNode);
+            
+            if (popover) {
+                modalDifficultyBadge.appendChild(popover);
+            }
+            
+            modalDifficultyBadge.className = 'badge-difficulty';
+            if (q.percentage_correct < 45) {
+                modalDifficultyBadge.classList.add('diff-hard');
+            } else if (q.percentage_correct < 75) {
+                modalDifficultyBadge.classList.add('diff-medium');
+            } else {
+                modalDifficultyBadge.classList.add('diff-easy');
+            }
+        } else {
+            modalDifficultyBadge.style.display = 'none';
+        }
+
+        // Render Subparts Breakdown inside the modal popover container
+        if (hasSubparts) {
+            renderSubpartsBreakdown(q.subparts, modalSubpartsContainer);
+        } else {
+            modalSubpartsContainer.innerHTML = '';
+        }
         
         // Clean and render text content with search matches highlighted
         modalTextContent.innerHTML = q.text ? highlightKeyword(q.text, state.searchQuery) : 'No description or text extracted.';
@@ -1851,13 +2083,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateWorksheetBasketUI() {
+        const count = state.worksheetQueue.length;
         if (worksheetBasketBadge) {
-            worksheetBasketBadge.textContent = state.worksheetQueue.length;
-            if (state.worksheetQueue.length > 0) {
-                worksheetBasketBadge.style.display = 'flex';
-            } else {
-                worksheetBasketBadge.style.display = 'none';
-            }
+            worksheetBasketBadge.textContent = count;
+            worksheetBasketBadge.style.display = count > 0 ? 'flex' : 'none';
+        }
+        // Sync the nav sidebar count badge
+        if (navWsCount) {
+            navWsCount.textContent = count;
+            navWsCount.style.display = count > 0 ? 'inline-flex' : 'none';
         }
         
         if (!builderQueueList) return;
@@ -2044,6 +2278,98 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- INITIALIZE APPLICATION ---
+    // Canvas Toggle Click Listeners
+    btnToggleCanvases.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.getAttribute('data-mode');
+            if (state.previewMode === mode) return;
+            
+            state.previewMode = mode;
+            
+            btnToggleCanvases.forEach(b => {
+                if (b.getAttribute('data-mode') === mode) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+            
+            if (state.currentQuestion) {
+                selectQuestion(state.currentQuestion.id);
+            }
+        });
+    });
+
+    // --- COHORT SCORE FLOATING POPOVER EVENT HANDLERS ---
+    
+    // Toggle active panel popover on score badge click
+    taggerDifficultyBadge.addEventListener('click', (e) => {
+        if (state.currentQuestion && state.currentQuestion.subparts && state.currentQuestion.subparts.length > 0) {
+            e.stopPropagation(); // Avoid immediate body click dismissal
+            const popover = document.getElementById('tagger-cohort-popover');
+            if (popover) {
+                const isVisible = popover.style.display === 'block';
+                popover.style.display = isVisible ? 'none' : 'block';
+            }
+        }
+    });
+
+    // Toggle overlay modal popover on score badge click
+    modalDifficultyBadge.addEventListener('click', (e) => {
+        if (modalSubpartsContainer && modalSubpartsContainer.children.length > 0) {
+            e.stopPropagation(); // Avoid immediate body click dismissal
+            const popover = document.getElementById('modal-cohort-popover');
+            if (popover) {
+                const isVisible = popover.style.display === 'block';
+                popover.style.display = isVisible ? 'none' : 'block';
+            }
+        }
+    });
+
+    // Prevent closing popover when clicking inside it
+    if (taggerCohortPopover) {
+        taggerCohortPopover.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    if (modalCohortPopover) {
+        modalCohortPopover.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    // Close all open popovers when clicking anywhere on the document body
+    document.addEventListener('click', () => {
+        const taggerPopover = document.getElementById('tagger-cohort-popover');
+        if (taggerPopover) {
+            taggerPopover.style.display = 'none';
+        }
+        const modalPopover = document.getElementById('modal-cohort-popover');
+        if (modalPopover) {
+            modalPopover.style.display = 'none';
+        }
+    });
+
+    // --- SIDEBAR COLLAPSE TOGGLE ---
+    if (btnSidebarToggle && mainSidebar && appEl) {
+        btnSidebarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isCollapsed = mainSidebar.classList.toggle('collapsed');
+            appEl.classList.toggle('sidebar-collapsed', isCollapsed);
+        });
+    }
+
+    // --- WORKSHEET BUILDER NAV ITEM ---
+    if (navItemWorksheet) {
+        navItemWorksheet.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (builderDrawerOverlay) {
+                builderDrawerOverlay.style.display = 'flex';
+            }
+        });
+    }
+
     refreshExamsList();
     fetchClasses(); // Fetch classes initially so seen indicators work across layouts
     switchTab('import');

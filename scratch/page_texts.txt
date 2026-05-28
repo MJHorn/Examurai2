@@ -1,0 +1,107 @@
+--- Page 2 ---
+2025 VCE Specialist Mathematics 2 external assessment report 
+© VCAA 
+Page 2
+ 
+Question 
+Correct 
+Answer 
+% 
+A 
+% 
+B 
+% 
+C 
+% 
+D 
+Comments 
+3 
+A 
+68 
+8 
+13 
+11 
+The given expression can be expanded using CAS, which allows the student to equate 
+coefficients with the given oblique asymptote. In addition, they should equate y (0), the y 
+intercept, to −2. 
+4 
+B 
+9 
+72 
+15 
+3 
+Work through the algorithm methodically as shown below: 
+ 
+5 
+A 
+69 
+16 
+9 
+6 
+Either use substitution and then equate coefficients or use the conjugate root theorem as shown 
+below. 
+ 
+ 
+
+--- Page 3 ---
+2025 VCE Specialist Mathematics 2 external assessment report 
+© VCAA 
+Page 3
+ 
+Question 
+Correct 
+Answer 
+% 
+A 
+% 
+B 
+% 
+C 
+% 
+D 
+Comments 
+6 
+C 
+8 
+11 
+70 
+10 
+ 
+ 
+7 
+D 
+4 
+11 
+6 
+79 
+ 
+ 
+8 
+A 
+80 
+10 
+4 
+6 
+In this direction field, it can be seen that the gradients for positive x values are the same as 
+those for negative x values, indicating the x value is squared. When x = 0 and y > 0, the 
+gradient is negative, indicating A is the best response. 
+9 
+C 
+8 
+15 
+49 
+29 
+Apply the formula for the surface area of a curve rotated about the x-axis. 
+ 
+ 
+10 
+D 
+8 
+12 
+11 
+69 
+Equate the formula for the volume of revolution to the given expression. 
+ 
+ 
+ 
+ 

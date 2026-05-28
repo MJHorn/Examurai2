@@ -2,7 +2,7 @@ import os
 import json
 from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
-from parser import extract_questions_from_pdf
+from parser import extract_questions_from_pdf, extract_report_data
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 
@@ -71,7 +71,8 @@ def get_exams():
             "id": exam_id,
             "title": exam["title"],
             "num_pages": exam["num_pages"],
-            "num_questions": len(exam["questions"])
+            "num_questions": len(exam["questions"]),
+            "examiner_report": exam.get("examiner_report", {"imported": False})
         })
     return jsonify(exams_list)
 
@@ -108,6 +109,33 @@ def get_questions(exam_id):
             doc.close()
         except Exception as e:
             print(f"Error computing dynamic y_offset: {e}")
+
+    # Dynamically compute report_y_offset_ratio for each question if report PDF is uploaded
+    report_pdf_path = os.path.join(UPLOAD_FOLDER, f"{exam_id}_report.pdf")
+    if os.path.exists(report_pdf_path):
+        try:
+            import fitz
+            doc_rep = fitz.open(report_pdf_path)
+            for q in exam.get("questions", []):
+                if "report_y_offset_ratio" not in q:
+                    if q.get("report_pages"):
+                        page_num = q["report_pages"][0]
+                        if page_num <= len(doc_rep):
+                            page = doc_rep[page_num - 1]
+                            q_num = q.get("number")
+                            # Try searching "Question X"
+                            rects = page.search_for(f"Question {q_num}")
+                            if not rects:
+                                # Try double space "Question  X"
+                                rects = page.search_for(f"Question  {q_num}")
+                            if rects:
+                                y0 = rects[0].y0
+                                q["report_y_offset_ratio"] = y0 / page.rect.height
+                            else:
+                                q["report_y_offset_ratio"] = 0.0
+            doc_rep.close()
+        except Exception as e:
+            print(f"Error computing dynamic report y_offset: {e}")
             
     return jsonify(exam)
 
@@ -154,6 +182,80 @@ def rename_exam(exam_id):
     save_db(db)
     
     return jsonify({"success": True, "title": db["exams"][exam_id]["title"]})
+
+@app.route('/api/exams/<exam_id>/import-report', methods=['POST'])
+def import_report(exam_id):
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+        
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+        
+    if not file.filename.lower().endswith('.pdf'):
+        return jsonify({"error": "Only PDF files are allowed"}), 400
+        
+    db = load_db()
+    if "exams" not in db or exam_id not in db["exams"]:
+        return jsonify({"error": "Exam not found"}), 404
+        
+    # Save report PDF
+    report_pdf_name = f"{exam_id}_report.pdf"
+    report_pdf_path = os.path.join(UPLOAD_FOLDER, report_pdf_name)
+    file.save(report_pdf_path)
+    
+    # Process report and extract metrics/render pages
+    try:
+        report_img_dir = os.path.join(STATIC_IMAGES_DIR, f"{exam_id}_report")
+        report_data = extract_report_data(report_pdf_path, exam_id, report_img_dir)
+        
+        # Populate exam questions with report page ranges and percentage difficulties
+        mc_percentages = report_data.get("mc_percentages", {})
+        mc_pages = report_data.get("mc_pages", {})
+        sec_b_page_ranges = report_data.get("sec_b_page_ranges", {})
+        sec_b_difficulties = report_data.get("sec_b_difficulties", {})
+        sec_b_subparts = report_data.get("sec_b_subparts", {})
+        
+        exam = db["exams"][exam_id]
+        
+        for q in exam.get("questions", []):
+            q_num = q.get("number")
+            if q.get("section") == "Section A":
+                q["report_pages"] = [mc_pages.get(q_num, 2)]
+                q["percentage_correct"] = mc_percentages.get(q_num, 75)
+            elif q.get("section") == "Section B":
+                q["report_pages"] = sec_b_page_ranges.get(q_num, [])
+                
+                # Cache detailed subparts
+                subparts = sec_b_subparts.get(q_num, [])
+                q["subparts"] = subparts
+                
+                if subparts:
+                    total_avg = sum(s["average"] for s in subparts)
+                    total_marks = sum(s["max_mark"] for s in subparts)
+                    if total_marks > 0:
+                        pct = int((total_avg / total_marks) * 100)
+                        pct = max(5, min(95, pct)) # Clamped beautifully
+                        q["percentage_correct"] = pct
+                    else:
+                        q["percentage_correct"] = 65
+                else:
+                    q["percentage_correct"] = 65
+                    
+        # Update exam metadata
+        exam["examiner_report"] = {
+            "imported": True,
+            "num_pages": report_data.get("num_pages", 0),
+            "filename": report_pdf_name
+        }
+        
+        save_db(db)
+        return jsonify({
+            "success": True,
+            "examiner_report": exam["examiner_report"]
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to parse Examiner's Report: {str(e)}"}), 500
 
 @app.route('/api/import', methods=['POST'])
 def import_exam():

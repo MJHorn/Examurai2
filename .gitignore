@@ -22,8 +22,8 @@ ehthumbs.db
 Thumbs.db
 
 # Examurai Local Runtime & Dynamic Data
-data/uploads/
-static/images/*/
+# data/uploads/
+# static/images/*/
 
 # Optional: Ignore the local JSON database to prevent syncing personal tags/data
 # data/db.json

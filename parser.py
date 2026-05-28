@@ -157,6 +157,150 @@ def extract_questions_from_pdf(pdf_path, exam_id, output_img_dir):
         "questions": questions
     }
 
+def extract_report_data(report_pdf_path, exam_id, output_img_dir):
+    """
+    Parses a VCE Examiner's Report PDF:
+    - Renders page images to output_img_dir
+    - Extracts Section A table correct percentages
+    - Extracts Section B question discussions and maps pages to questions
+    """
+    import os
+    import re
+    import fitz
+
+    doc = fitz.open(report_pdf_path)
+    num_pages = len(doc)
+    
+    # Ensure output image directory exists
+    os.makedirs(output_img_dir, exist_ok=True)
+    
+    # 1. Render all report pages to images
+    for idx in range(num_pages):
+        page_num = idx + 1
+        page = doc[idx]
+        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+        img_filename = f"page_{page_num}.png"
+        pix.save(os.path.join(output_img_dir, img_filename))
+
+    # 2. Extract text from all pages
+    page_texts = []
+    for idx in range(num_pages):
+        page_texts.append(doc[idx].get_text())
+
+    # 3. Parse Section A multiple-choice table to get percentages
+    mc_percentages = {}
+    mc_pages = {}
+    row_pattern = re.compile(
+        r'\b(\d+)\s+([A-D])\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\b',
+        re.IGNORECASE
+    )
+
+    for page_idx in range(min(5, num_pages)):
+        text = page_texts[page_idx]
+        matches = row_pattern.findall(text)
+        for m in matches:
+            q_num = int(m[0])
+            correct_ans = m[1].upper()
+            percentages = {
+                'A': int(m[2]),
+                'B': int(m[3]),
+                'C': int(m[4]),
+                'D': int(m[5])
+            }
+            if correct_ans in percentages:
+                mc_percentages[q_num] = percentages[correct_ans]
+                mc_pages[q_num] = page_idx + 1
+
+    # 4. Map report pages to Section B written questions
+    sec_b_page_starts = {}
+    for page_num in range(1, num_pages + 1):
+        text = page_texts[page_num - 1]
+        if page_num <= 2:
+            continue
+            
+        matches = re.finditer(r'Question\s+(\d+)', text)
+        for m in matches:
+            q_num = int(m.group(1))
+            if q_num <= 8:
+                if q_num not in sec_b_page_starts:
+                    sec_b_page_starts[q_num] = page_num
+
+    # Construct page ranges
+    sec_b_page_ranges = {}
+    sorted_q_nums = sorted(sec_b_page_starts.keys())
+    for i, q_num in enumerate(sorted_q_nums):
+        start_page = sec_b_page_starts[q_num]
+        if i + 1 < len(sorted_q_nums):
+            end_page = sec_b_page_starts[sorted_q_nums[i + 1]] - 1
+        else:
+            end_page = num_pages
+        if end_page < start_page:
+            end_page = start_page
+        sec_b_page_ranges[q_num] = list(range(start_page, end_page + 1))
+
+    # 5. Extract Section B subpart statistics and average scores
+    sec_b_subparts = {}
+    sec_b_difficulties = {}
+    subpart_pattern = re.compile(r'Question\s+(\d+)([a-z](?:\.[a-z0-9.]+)?)\b', re.IGNORECASE)
+    
+    for page_num in range(1, num_pages + 1):
+        text = page_texts[page_num - 1]
+        matches = list(subpart_pattern.finditer(text))
+        for idx, m in enumerate(matches):
+            q_num = int(m.group(1))
+            part_label = m.group(2)
+            
+            # Sub-text is from this match to the next match on the same page
+            start_pos = m.end()
+            end_pos = matches[idx+1].start() if idx+1 < len(matches) else len(text)
+            sub_text = text[start_pos:end_pos]
+            
+            # Find the Mark list and Average list
+            mark_match = re.search(r'Mark\s+(.*?)\s+Average', sub_text, re.DOTALL | re.IGNORECASE)
+            if mark_match:
+                marks_scale = [int(x) for x in re.findall(r'\b\d+\b', mark_match.group(1))]
+                if marks_scale:
+                    max_mark = marks_scale[-1]
+                    avg_index = sub_text.find('Average')
+                    if avg_index != -1:
+                        avg_text = sub_text[avg_index:]
+                        numbers = [float(x) for x in re.findall(r'\b\d+\.\d+|\b\d+\b', avg_text)]
+                        if len(numbers) >= max_mark + 2:
+                            average = numbers[max_mark+1]
+                            # Sanitize average if it extracts a percentage or outlier
+                            if average > max_mark:
+                                if average <= 100:
+                                    average = (average / 100.0) * max_mark
+                                else:
+                                    average = max_mark
+                                    
+                            pct = int((average / max_mark) * 100)
+                            pct = max(0, min(100, pct))
+                            
+                            if q_num not in sec_b_subparts:
+                                sec_b_subparts[q_num] = []
+                            sec_b_subparts[q_num].append({
+                                "label": part_label,
+                                "max_mark": max_mark,
+                                "average": round(average, 2),
+                                "percentage": pct
+                            })
+
+    # Also build basic difficulties mapping for fallback
+    for q_num, subparts in sec_b_subparts.items():
+        sec_b_difficulties[q_num] = [s["average"] for s in subparts]
+
+    doc.close()
+
+    return {
+        "mc_percentages": mc_percentages,
+        "mc_pages": mc_pages,
+        "sec_b_page_ranges": sec_b_page_ranges,
+        "sec_b_difficulties": sec_b_difficulties,
+        "sec_b_subparts": sec_b_subparts,
+        "num_pages": num_pages
+    }
+
 # Quick test if run directly
 if __name__ == "__main__":
     pdf_path = "/Users/transfer/Downloads/2025-SpecialistMaths2.pdf"

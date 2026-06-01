@@ -992,6 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.questions[idx].tags = newTags;
             }
             syncSidebarQuestionTags(state.currentQuestion.id, newTags);
+            rebuildTagCloud();
         }
     }
 
@@ -1015,6 +1016,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.questions[idx].tags = newTags;
             }
             syncSidebarQuestionTags(state.currentQuestion.id, newTags);
+            rebuildTagCloud();
         }
     }
 
@@ -1056,6 +1058,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateSuggestedTagsHighlight(newTags);
             }
             syncSidebarQuestionTags(qid, newTags);
+            rebuildTagCloud();
         }
     }
 
@@ -1376,6 +1379,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         state.allTags = tagCounts;
+        updateAutocompleteDatalist(tagCounts);
 
         if (Object.keys(tagCounts).length === 0) {
             libraryTagCloud.innerHTML = `<span class="empty-state" style="font-size:12px; padding:0;">No study tags have been created yet.</span>`;
@@ -1403,6 +1407,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 performSearch();
             });
         });
+    }
+
+    function updateAutocompleteDatalist(tagCounts) {
+        const datalist = document.getElementById('existing-tags-datalist');
+        if (!datalist) return;
+        
+        const tags = Object.keys(tagCounts).sort();
+        datalist.innerHTML = tags.map(tag => `<option value="${tag}"></option>`).join('');
     }
 
 
@@ -2372,5 +2384,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     refreshExamsList();
     fetchClasses(); // Fetch classes initially so seen indicators work across layouts
+    rebuildTagCloud(); // Initialize tag cloud and autocomplete suggestions datalist
     switchTab('import');
 });

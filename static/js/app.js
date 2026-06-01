@@ -935,18 +935,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Toggle suggested tags on click
-    document.querySelectorAll('.btn-tag-suggest').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (!state.currentQuestion) return;
-            const tagVal = btn.getAttribute('data-tag');
-            
-            if (state.currentQuestion.tags.includes(tagVal)) {
-                removeTag(tagVal);
-            } else {
-                addTag(tagVal);
-            }
-        });
+    // Toggle suggested tags on click (event delegation)
+    taggerSuggestedTags.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-tag-suggest');
+        if (!btn || !state.currentQuestion) return;
+        const tagVal = btn.getAttribute('data-tag');
+        
+        if (state.currentQuestion.tags.includes(tagVal)) {
+            removeTag(tagVal);
+        } else {
+            addTag(tagVal);
+        }
     });
 
     // Custom Tag Submission
@@ -1135,13 +1134,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Bulk suggested list toggles
-    document.querySelectorAll('.btn-tag-suggest-bulk').forEach(btn => {
-        btn.addEventListener('click', () => {
+    // Bulk suggested list toggles (event delegation)
+    const bulkSuggestedTags = document.getElementById('bulk-suggested-tags');
+    if (bulkSuggestedTags) {
+        bulkSuggestedTags.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-tag-suggest-bulk');
+            if (!btn) return;
             const tagVal = btn.getAttribute('data-tag');
             bulkUpdateTags([tagVal], 'add');
         });
-    });
+    }
 
     btnClearBulk.addEventListener('click', () => {
         state.selectedQuestionIds = [];
@@ -1380,6 +1382,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         state.allTags = tagCounts;
         updateAutocompleteDatalist(tagCounts);
+        renderSuggestedTags(tagCounts);
 
         if (Object.keys(tagCounts).length === 0) {
             libraryTagCloud.innerHTML = `<span class="empty-state" style="font-size:12px; padding:0;">No study tags have been created yet.</span>`;
@@ -1415,6 +1418,43 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const tags = Object.keys(tagCounts).sort();
         datalist.innerHTML = tags.map(tag => `<option value="${tag}"></option>`).join('');
+    }
+
+    function renderSuggestedTags(tagCounts) {
+        const defaultTags = [
+            "calculus", "vectors", "matrices", "complex-numbers",
+            "probability", "statistics", "mechanics", "kinematics",
+            "differential-equations", "multiple-choice"
+        ];
+        
+        // Sort tags by frequency descending
+        const sortedDbTags = Object.entries(tagCounts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([tag]) => tag);
+            
+        // Combine DB tags with default tags to ensure we have a robust list
+        const uniqueSuggestions = new Set([...sortedDbTags, ...defaultTags]);
+        const finalSuggestions = Array.from(uniqueSuggestions).slice(0, 10);
+        
+        // Render single tagger suggested strip
+        taggerSuggestedTags.innerHTML = finalSuggestions.map(tag => {
+            const label = tag.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            return `<button class="btn-tag-suggest" data-tag="${tag}">${label}</button>`;
+        }).join('');
+        
+        // Highlight active tags on current question if selected
+        if (state.currentQuestion) {
+            updateSuggestedTagsHighlight(state.currentQuestion.tags);
+        }
+        
+        // Render bulk tagger suggested strip
+        const bulkSuggestedList = document.getElementById('bulk-suggested-tags');
+        if (bulkSuggestedList) {
+            bulkSuggestedList.innerHTML = finalSuggestions.slice(0, 8).map(tag => {
+                const label = tag.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                return `<button class="btn-tag-suggest-bulk" data-tag="${tag}">${label}</button>`;
+            }).join('');
+        }
     }
 
 

@@ -458,9 +458,9 @@
                                             <line x1="12" y1="20" x2="12" y2="4"/>
                                             <line x1="6" y1="20" x2="6" y2="14"/>
                                         </svg>
-                                        Syllabus Domain Coverage
+                                        Exam Seen Progress
                                     </h3>
-                                    <span style="font-size: 11px; color: var(--text-muted);">Calculated from completed question tags</span>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Percentage of questions marked as seen for each exam</span>
                                 </div>
                                 <div class="syllabus-grid" id="class-syllabus-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
                                     <!-- Progress bars populated dynamically -->
@@ -614,6 +614,28 @@
                         <span id="compile-loader-text">Compiling PDF vector sheets...</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duplicate Import Warning Modal -->
+    <div class="modal-overlay" id="duplicate-modal" style="display: none;">
+        <div class="modal-content glass" style="max-width: 420px; padding: 28px; display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--accent-rose)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <h3 style="font-size: 18px; margin: 0;">Duplicate Exam Detected</h3>
+            </div>
+            <p id="duplicate-modal-text" style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+                An exam with this filename already exists in the system.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                <button class="btn btn-primary" id="btn-duplicate-new" style="justify-content: center; padding: 12px; font-size: 12px;">Import as New Copy</button>
+                <button class="btn btn-secondary" id="btn-duplicate-overwrite" style="justify-content: center; padding: 12px; font-size: 12px;">Overwrite Existing (Merge Tags)</button>
+                <button class="btn btn-secondary" id="btn-duplicate-cancel" style="justify-content: center; padding: 12px; font-size: 12px; border-color: rgba(244, 63, 94, 0.4); color: var(--accent-rose);">Cancel Import</button>
             </div>
         </div>
     </div>

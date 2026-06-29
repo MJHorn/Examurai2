@@ -639,7 +639,10 @@ h1, h2, h3, h4 {
     flex-direction: column;
     gap: 6px;
     padding: 8px 16px !important;
+    position: relative;
+    z-index: 10;
 }
+
 
 .detail-top {
     display: flex;
@@ -1558,6 +1561,16 @@ h1, h2, h3, h4 {
     flex-direction: column;
     gap: 4px;
     flex-grow: 1;
+    cursor: pointer;
+}
+
+.class-seen-info:hover .class-seen-q-title {
+    color: var(--accent-purple);
+}
+
+.class-seen-info:hover .eye-icon {
+    opacity: 0.95 !important;
+    color: var(--accent-purple);
 }
 
 .class-seen-q-title {
@@ -1565,6 +1578,7 @@ h1, h2, h3, h4 {
     font-size: 14.5px;
     font-weight: 700;
     color: var(--text-main);
+    transition: color 0.2s ease;
 }
 
 .class-seen-q-meta {
@@ -1583,6 +1597,13 @@ h1, h2, h3, h4 {
     color: var(--text-muted);
     border: 1px solid var(--border-color);
     transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.class-seen-status-badge:hover {
+    border-color: rgba(99, 102, 241, 0.35);
+    background-color: rgba(99, 102, 241, 0.06);
+    color: var(--text-main);
 }
 
 .class-seen-card.seen .class-seen-status-badge {

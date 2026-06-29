@@ -248,6 +248,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     No Report
                    </span>`;
 
+            const tagProgressText = `${exam.num_tagged} of ${exam.num_questions} questions tagged (${exam.total_tags} tags)`;
+            const tagProgressIcon = `
+                <span style="color: ${exam.num_tagged === exam.num_questions ? '#34d399' : 'var(--text-secondary)'}; display: flex; align-items: center; gap: 4px;" title="${tagProgressText}">
+                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px; color: ${exam.num_tagged === exam.num_questions ? '#34d399' : 'var(--text-secondary)'};">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01"/>
+                    </svg>
+                    ${exam.num_tagged}/${exam.num_questions} Tagged (${exam.total_tags} tags)
+                </span>
+            `;
+
             return `
             <div class="exam-item">
                 <div class="exam-info">
@@ -265,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </svg>
                             ${exam.num_questions} Questions
                         </span>
+                        ${tagProgressIcon}
                         ${reportIcon}
                     </div>
                 </div>
@@ -380,11 +391,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    async function uploadFile(file) {
+    function promptDuplicateExam(title) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('duplicate-modal');
+            const text = document.getElementById('duplicate-modal-text');
+            const btnNew = document.getElementById('btn-duplicate-new');
+            const btnOverwrite = document.getElementById('btn-duplicate-overwrite');
+            const btnCancel = document.getElementById('btn-duplicate-cancel');
+
+            if (!modal || !text || !btnNew || !btnOverwrite || !btnCancel) {
+                const res = confirm(`An exam titled "${title}" already exists. Would you like to overwrite it?\n\n(Click 'OK' to overwrite, or 'Cancel' to create a new copy)`);
+                resolve(res ? 'overwrite' : 'new_copy');
+                return;
+            }
+
+            text.textContent = `An exam titled "${title}" is already imported in the system. Choose how you would like to handle this duplicate:`;
+            modal.style.display = 'flex';
+
+            const cleanup = (choice) => {
+                modal.style.display = 'none';
+                btnNew.removeEventListener('click', onNew);
+                btnOverwrite.removeEventListener('click', onOverwrite);
+                btnCancel.removeEventListener('click', onCancel);
+                resolve(choice);
+            };
+
+            const onNew = () => cleanup('new_copy');
+            const onOverwrite = () => cleanup('overwrite');
+            const onCancel = () => cleanup('cancel');
+
+            btnNew.addEventListener('click', onNew);
+            btnOverwrite.addEventListener('click', onOverwrite);
+            btnCancel.addEventListener('click', onCancel);
+        });
+    }
+
+    async function uploadFile(file, mode = null) {
         uploadLoader.style.display = 'flex';
         
         const formData = new FormData();
         formData.append('file', file);
+        if (mode) {
+            formData.append('mode', mode);
+        }
 
         const result = await apiRequest('/api/import', {
             method: 'POST',
@@ -394,9 +443,16 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadLoader.style.display = 'none';
         pdfFileInput.value = ''; // Reset input
 
-        if (result && result.success) {
-            alert(`Successfully imported: ${result.exam.title}!`);
-            refreshExamsList();
+        if (result) {
+            if (result.status === 'exists') {
+                const choice = await promptDuplicateExam(result.title);
+                if (choice !== 'cancel') {
+                    await uploadFile(file, choice);
+                }
+            } else if (result.success) {
+                alert(`Successfully imported: ${result.exam.title}!`);
+                refreshExamsList();
+            }
         }
     }
 
@@ -1883,11 +1939,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const isSeen = seenList.includes(q.id);
             return `
                 <div class="class-seen-card ${isSeen ? 'seen' : ''}" data-qid="${q.id}">
-                    <div class="class-seen-info">
-                        <span class="class-seen-q-title">${q.section} Question ${q.number}</span>
+                    <div class="class-seen-info" title="Click to view question sheets">
+                        <span class="class-seen-q-title" style="display: flex; align-items: center; gap: 6px;">
+                            ${q.section} Question ${q.number}
+                            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" class="eye-icon" style="opacity: 0.4; transition: all 0.2s ease;">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </span>
                         <span class="class-seen-q-meta">${q.marks} marks • Pages: ${q.pages.join(', ')}</span>
                     </div>
-                    <span class="class-seen-status-badge">${isSeen ? 'Seen' : 'Unseen'}</span>
+                    <span class="class-seen-status-badge" title="Click to toggle seen/unseen">${isSeen ? 'Seen' : 'Unseen'}</span>
                 </div>
             `;
         }).join('');
@@ -1898,15 +1960,28 @@ document.addEventListener('DOMContentLoaded', () => {
         classSeenStats.textContent = `${examSeenCount} of ${questions.length} Completed`;
 
         // Render syllabus analytics gauges
-        renderSyllabusCoverage(cls, questions);
+        renderExamCompletionTracker(cls);
 
 
-        // Attach seen card click switch listeners
+        // Attach checklist event listeners (info click opens preview modal, badge click toggles seen status)
         document.querySelectorAll('.class-seen-card').forEach(card => {
-            card.addEventListener('click', async () => {
-                const qid = card.getAttribute('data-qid');
-                await toggleClassSeenState(state.currentClassId, qid, card);
-            });
+            const qid = card.getAttribute('data-qid');
+            
+            const infoArea = card.querySelector('.class-seen-info');
+            if (infoArea) {
+                infoArea.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    await openQuestionModal(state.currentExamId, qid);
+                });
+            }
+
+            const badge = card.querySelector('.class-seen-status-badge');
+            if (badge) {
+                badge.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    await toggleClassSeenState(state.currentClassId, qid, card);
+                });
+            }
         });
     }
 
@@ -1950,7 +2025,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const examQIds = examDetails.map(q => q.id);
                 const count = cls.seen_questions.filter(id => examQIds.includes(id)).length;
                 classSeenStats.textContent = `${count} of ${examQIds.length} Completed`;
-                renderSyllabusCoverage(cls, examDetails);
+                renderExamCompletionTracker(cls);
             }
         }
     }
@@ -2011,84 +2086,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // --- SUITE 10 & 11: WORKSHEET BUILDER & SYLLABUS ANALYTICS ENGINE ---
+    // --- SUITE 10 & 11: WORKSHEET BUILDER & EXAM COMPLETION ANALYTICS ENGINE ---
     // ==========================================
 
-    function detectQuestionDomain(q) {
-        const text = (q.text || '').toLowerCase();
-        const tags = (q.tags || []).map(t => t.toLowerCase());
-        
-        // Check tags first
-        if (tags.includes('calculus') || tags.includes('differential-equations') || tags.includes('integration') || tags.includes('differentiation') || tags.includes('solids-of-revolution') || tags.includes('rates-of-change')) return 'Calculus';
-        if (tags.includes('vectors') || tags.includes('matrices') || tags.includes('planes') || tags.includes('matrix')) return 'Vectors & Matrices';
-        if (tags.includes('complex-numbers') || tags.includes('argand-plane') || tags.includes('algebra')) return 'Complex Numbers';
-        if (tags.includes('probability') || tags.includes('statistics') || tags.includes('normal-distribution') || tags.includes('confidence-intervals') || tags.includes('hypothesis-testing')) return 'Probability & Stats';
-        if (tags.includes('mechanics') || tags.includes('kinematics') || tags.includes('dynamics') || tags.includes('forces')) return 'Mechanics & Kinematics';
-        if (tags.includes('graphs') || tags.includes('functions') || tags.includes('asymptotes')) return 'Functions & Graphs';
-        
-        // Check text heuristics
-        if (text.includes('volume of revolution') || text.includes('differential equation') || text.includes('integral') || text.includes('derivative') || text.includes('calculus') || text.includes(' dy ') || text.includes(' dx ') || text.includes('dt') || text.includes('substitution u')) return 'Calculus';
-        if (text.includes('vector') || text.includes('plane') || text.includes('matrix') || text.includes('matrices') || text.includes('i') || text.includes('j') || text.includes('k') || text.includes('r') || text.includes('v') || text.includes('a') || text.includes('vector algebra')) return 'Vectors & Matrices';
-        if (text.includes('complex') || text.includes('argand') || text.includes(' z =') || text.includes('imaginary') || text.includes('re(') || text.includes('im(') || text.includes('∈ c')) return 'Complex Numbers';
-        if (text.includes('probability') || text.includes('mean') || text.includes('standard deviation') || text.includes('confidence interval') || text.includes('hypothesis') || text.includes('p value') || text.includes('normally distributed') || text.includes('level of significance') || text.includes('statistical test')) return 'Probability & Stats';
-        if (text.includes('mechanics') || text.includes('kinematics') || text.includes('velocity') || text.includes('acceleration') || text.includes('force') || text.includes('gravity') || text.includes('mass') || text.includes('particle') || text.includes('projection') || text.includes('speed') || text.includes('projected')) return 'Mechanics & Kinematics';
-        if (text.includes('asymptote') || text.includes('inflection') || text.includes('graph') || text.includes('domain') || text.includes('intercept') || text.includes('curve') || text.includes('sketch') || text.includes('stationary point')) return 'Functions & Graphs';
-        
-        return 'Other';
+    function getExamIdFromQuestionId(qid) {
+        if (qid.includes('_a_q')) {
+            return qid.split('_a_q')[0];
+        }
+        if (qid.includes('_b_q')) {
+            return qid.split('_b_q')[0];
+        }
+        return '';
     }
 
-    function renderSyllabusCoverage(cls, questions) {
+    function renderExamCompletionTracker(cls) {
         const grid = document.getElementById('class-syllabus-grid');
         if (!grid) return;
 
-        const syllabusCategories = [
-            { name: "Calculus", color: "linear-gradient(90deg, #6366f1, #3b82f6)" },
-            { name: "Vectors & Matrices", color: "linear-gradient(90deg, #3b82f6, #06b6d4)" },
-            { name: "Complex Numbers", color: "linear-gradient(90deg, #06b6d4, #10b981)" },
-            { name: "Probability & Stats", color: "linear-gradient(90deg, #10b981, #34d399)" },
-            { name: "Mechanics & Kinematics", color: "linear-gradient(90deg, #e11d48, #f43f5e)" },
-            { name: "Functions & Graphs", color: "linear-gradient(90deg, #f59e0b, #eab308)" }
-        ];
-
-        // Gather count for each domain
-        const domainCounts = {};
-        const domainSeen = {};
-        
-        syllabusCategories.forEach(cat => {
-            domainCounts[cat.name] = 0;
-            domainSeen[cat.name] = 0;
-        });
+        if (!state.exams || state.exams.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1; padding: 24px 0;">
+                    <p style="font-size:12px; color: var(--text-muted);">No exams available to track.</p>
+                </div>
+            `;
+            return;
+        }
 
         const seenList = cls.seen_questions || [];
 
-        questions.forEach(q => {
-            const domain = detectQuestionDomain(q);
-            if (domainCounts[domain] !== undefined) {
-                domainCounts[domain]++;
-                if (seenList.includes(q.id)) {
-                    domainSeen[domain]++;
-                }
-            }
+        // Build list of exams with progress
+        const examItems = state.exams.map((exam, idx) => {
+            const total = exam.num_questions || 0;
+            // Tally seen questions for this exam
+            const completed = seenList.filter(qid => getExamIdFromQuestionId(qid) === exam.id).length;
+            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            const colors = [
+                "linear-gradient(90deg, #6366f1, #3b82f6)",
+                "linear-gradient(90deg, #3b82f6, #06b6d4)",
+                "linear-gradient(90deg, #06b6d4, #10b981)",
+                "linear-gradient(90deg, #10b981, #34d399)",
+                "linear-gradient(90deg, #e11d48, #f43f5e)",
+                "linear-gradient(90deg, #f59e0b, #eab308)"
+            ];
+            const color = colors[idx % colors.length];
+
+            return {
+                title: exam.title,
+                total,
+                completed,
+                pct,
+                color
+            };
         });
 
-        grid.innerHTML = syllabusCategories.map(cat => {
-            const total = domainCounts[cat.name];
-            const completed = domainSeen[cat.name];
-            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-            
-            return `
-                <div class="syllabus-domain-item">
-                    <div class="syllabus-domain-header">
-                        <span class="syllabus-domain-name">${cat.name}</span>
-                        <span class="syllabus-domain-percentage" style="color: ${pct === 100 ? '#34d399' : 'var(--text-secondary)'};">${pct}%</span>
-                    </div>
-                    <div class="syllabus-progress-bar-wrapper">
-                        <div class="syllabus-progress-bar-fill" style="width: ${pct}%; background: ${cat.color};"></div>
-                    </div>
-                    <div class="syllabus-domain-stats">${completed} of ${total} Completed</div>
+        grid.innerHTML = examItems.map(item => `
+            <div class="syllabus-domain-item">
+                <div class="syllabus-domain-header">
+                    <span class="syllabus-domain-name">${item.title}</span>
+                    <span class="syllabus-domain-percentage" style="color: ${item.pct === 100 ? '#34d399' : 'var(--text-secondary)'};">${item.pct}%</span>
                 </div>
-            `;
-        }).join('');
+                <div class="syllabus-progress-bar-wrapper">
+                    <div class="syllabus-progress-bar-fill" style="width: ${item.pct}%; background: ${item.color};"></div>
+                </div>
+                <div class="syllabus-domain-stats">${item.completed} of ${item.total} Completed</div>
+            </div>
+        `).join('');
     }
 
     function toggleWorksheetQuestion(examId, examTitle, q) {

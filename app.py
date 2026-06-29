@@ -67,14 +67,22 @@ def get_exams():
     db = load_db()
     exams_list = []
     for exam_id, exam in db["exams"].items():
+        questions = exam.get("questions", [])
+        num_questions = len(questions)
+        num_tagged = sum(1 for q in questions if q.get("tags") and len(q["tags"]) > 0)
+        total_tags = sum(len(q.get("tags", [])) for q in questions)
+        
         exams_list.append({
             "id": exam_id,
             "title": exam["title"],
             "num_pages": exam["num_pages"],
-            "num_questions": len(exam["questions"]),
+            "num_questions": num_questions,
+            "num_tagged": num_tagged,
+            "total_tags": total_tags,
             "examiner_report": exam.get("examiner_report", {"imported": False})
         })
     return jsonify(exams_list)
+
 
 @app.route('/api/exams/<exam_id>/questions', methods=['GET'])
 def get_questions(exam_id):
@@ -272,6 +280,27 @@ def import_exam():
     filename = secure_filename(file.filename)
     exam_id = filename.lower().replace('.pdf', '').replace('-', '_').replace(' ', '_')
     
+    # Check if this exam already exists in the database
+    db = load_db()
+    
+    mode = request.form.get('mode') # None, 'overwrite', or 'new_copy'
+    
+    if exam_id in db["exams"] and not mode:
+        return jsonify({
+            "status": "exists",
+            "exam_id": exam_id,
+            "title": db["exams"][exam_id]["title"]
+        })
+        
+    # If the user requested a new copy, generate a unique exam_id
+    counter = 1
+    if exam_id in db["exams"] and mode == 'new_copy':
+        new_exam_id = f"{exam_id}_{counter}"
+        while new_exam_id in db["exams"]:
+            counter += 1
+            new_exam_id = f"{exam_id}_{counter}"
+        exam_id = new_exam_id
+        
     # Save uploaded file
     pdf_path = os.path.join(UPLOAD_FOLDER, f"{exam_id}.pdf")
     file.save(pdf_path)
@@ -281,9 +310,12 @@ def import_exam():
         img_dir = os.path.join(STATIC_IMAGES_DIR, exam_id)
         exam_data = extract_questions_from_pdf(pdf_path, exam_id, img_dir)
         
-        # Merge existing tags if exam was imported before
-        db = load_db()
-        if exam_id in db["exams"]:
+        # Adjust title for copies
+        if mode == 'new_copy':
+            exam_data["title"] = f"{exam_data['title']} (Copy {counter})"
+            
+        # Merge existing tags if overwriting
+        if mode == 'overwrite' and exam_id in db["exams"]:
             existing_tags = {}
             for q in db["exams"][exam_id]["questions"]:
                 existing_tags[q["id"]] = q.get("tags", [])
@@ -304,6 +336,7 @@ def import_exam():
         })
     except Exception as e:
         return jsonify({"error": f"Failed to parse PDF: {str(e)}"}), 500
+
 
 @app.route('/api/questions/<exam_id>/<q_id>/tags', methods=['POST'])
 def update_tags(exam_id, q_id):

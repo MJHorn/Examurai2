@@ -3,6 +3,15 @@ import re
 import json
 import fitz
 
+def get_page_text(page, use_ocr=False):
+    if use_ocr:
+        try:
+            tp = page.get_textpage_ocr(flags=3, dpi=150, language="eng")
+            return tp.extractText()
+        except Exception as e:
+            print(f"OCR failed for page {page.number + 1}: {e}")
+    return page.get_text()
+
 def extract_questions_from_pdf(pdf_path, exam_id, output_img_dir):
     """
     Parses a VCE Exam PDF, extracts Section A & B questions,
@@ -14,6 +23,23 @@ def extract_questions_from_pdf(pdf_path, exam_id, output_img_dir):
     # Ensure output image directory exists
     os.makedirs(output_img_dir, exist_ok=True)
     
+    # Detect if PDF is scanned (image-only) by checking characters in first 3 pages
+    total_chars = sum(len(doc[i].get_text().strip()) for i in range(min(3, num_pages)))
+    use_ocr = total_chars < 50
+    if use_ocr:
+        print(f"Scanned PDF detected ({pdf_path}). Using Tesseract OCR for text extraction...")
+    
+    # Detect if there is a Section A in the PDF (typical for Exam 2)
+    has_section_a = False
+    for i in range(min(5, num_pages)):
+        p_text = get_page_text(doc[i], use_ocr=use_ocr)
+        if "section a" in p_text.lower():
+            has_section_a = True
+            break
+            
+    is_exam_1 = not has_section_a
+    if is_exam_1:
+        print(f"No Section A detected ({pdf_path}). Parsing all questions in Section B written-response style...")
     questions = []
     
     # Phase 1: Scan pages to find which questions start on which pages
@@ -25,7 +51,7 @@ def extract_questions_from_pdf(pdf_path, exam_id, output_img_dir):
     for idx in range(num_pages):
         page_num = idx + 1
         page = doc[idx]
-        text = page.get_text()
+        text = get_page_text(page, use_ocr=use_ocr)
         
         # Render high-resolution page image
         pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
@@ -36,10 +62,13 @@ def extract_questions_from_pdf(pdf_path, exam_id, output_img_dir):
         is_sec_a = False
         is_sec_b = False
         
-        if "Section A" in text or (page_num >= 2 and page_num <= 10):
-            is_sec_a = True
-        elif "Section B" in text or (page_num >= 12 and page_num <= 24):
+        if is_exam_1:
             is_sec_b = True
+        else:
+            if "Section A" in text or (page_num >= 2 and page_num <= 10):
+                is_sec_a = True
+            elif "Section B" in text or (page_num >= 12 and page_num <= 24):
+                is_sec_b = True
             
         if is_sec_a:
             # Look for Question X
@@ -69,7 +98,7 @@ def extract_questions_from_pdf(pdf_path, exam_id, output_img_dir):
     for page_num in sorted(sec_a_starts.keys()):
         q_nums = sec_a_starts[page_num]
         page_idx = page_num - 1
-        page_text = doc[page_idx].get_text()
+        page_text = get_page_text(doc[page_idx], use_ocr=use_ocr)
         
         # Find positions of "Question X"
         positions = []
@@ -124,7 +153,7 @@ def extract_questions_from_pdf(pdf_path, exam_id, output_img_dir):
         # Aggregate text across all its pages
         q_texts = []
         for p in page_range:
-            p_text = doc[p-1].get_text()
+            p_text = get_page_text(doc[p-1], use_ocr=use_ocr)
             # Clean boilerplate
             p_text = re.sub(r'\d+\s+VCE\s+Specialist\s+Mathematics\s+Examination.*|Do\s+not\s+write\s+in\s+this\s+area.*', '', p_text, flags=re.IGNORECASE)
             q_texts.append(p_text.strip())
@@ -174,6 +203,12 @@ def extract_report_data(report_pdf_path, exam_id, output_img_dir):
     # Ensure output image directory exists
     os.makedirs(output_img_dir, exist_ok=True)
     
+    # Detect if report PDF is scanned (image-only) by checking characters in first 3 pages
+    total_chars = sum(len(doc[i].get_text().strip()) for i in range(min(3, num_pages)))
+    use_ocr = total_chars < 50
+    if use_ocr:
+        print(f"Scanned report PDF detected ({report_pdf_path}). Using Tesseract OCR for text extraction...")
+    
     # 1. Render all report pages to images
     for idx in range(num_pages):
         page_num = idx + 1
@@ -185,7 +220,7 @@ def extract_report_data(report_pdf_path, exam_id, output_img_dir):
     # 2. Extract text from all pages
     page_texts = []
     for idx in range(num_pages):
-        page_texts.append(doc[idx].get_text())
+        page_texts.append(get_page_text(doc[idx], use_ocr=use_ocr))
 
     # 3. Parse Section A multiple-choice table to get percentages
     mc_percentages = {}

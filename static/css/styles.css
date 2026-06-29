@@ -542,6 +542,11 @@ h1, h2, h3, h4 {
     height: calc(100vh - 128px);
 }
 
+#tab-tagging .tagging-layout {
+    height: calc(100vh - 40px); /* Extends to the bottom of the viewport, taking into account .main-content's padding */
+}
+
+
 .tagging-sidebar {
     height: 100%;
     display: flex;
